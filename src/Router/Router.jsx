@@ -1,6 +1,9 @@
 import { createBrowserRouter} from "react-router";
 import RootLayout from "../Layout/RootLayout";
 import Home from "../Pages/Home/Home";
+import AllPolicies from "../Pages/AllPolicies/AllPolicies";
+import Agents from "../Pages/Agent/Agents";
+import FAQ from "../Pages/FAQ/FAQ";
 
  export const router = createBrowserRouter([
   {
@@ -12,6 +15,19 @@ import Home from "../Pages/Home/Home";
         Component:Home,
         
     },
+    {
+        path:'/policies',
+        Component:AllPolicies
+    },
+    {
+        path:'/agents',
+        Component:Agents
+
+    },
+    {
+        path:'/faq',
+        Component:FAQ
+    }
     
    ]
   },
