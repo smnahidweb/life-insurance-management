@@ -7,6 +7,10 @@ import FAQ from "../Pages/FAQ/FAQ";
 import AuthLayout from "../Layout/AuthLayout";
 import Login from "../Pages/Login/Login";
 import Register from "../Pages/Register/Register";
+import DashboardLayout from "../Layout/DashboardLayout";
+import Forbidden from "../Components/Forbidden";
+import PrivateRoute from "./PrivateRoute";
+import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 
  export const router = createBrowserRouter([
   {
@@ -30,6 +34,10 @@ import Register from "../Pages/Register/Register";
     {
         path:'/faq',
         Component:FAQ
+    },
+    {
+        path:'/forbidden',
+        Component:Forbidden
     }
     
    ]
@@ -48,6 +56,19 @@ import Register from "../Pages/Register/Register";
             Component:Register
         }
 
+    ]
+
+  },
+  {
+    path:'/dashboard',
+     element: <PrivateRoute>
+        <DashboardLayout></DashboardLayout>
+     </PrivateRoute>  ,
+    children:[
+         {
+        index:true,
+        Component:DashboardHome
+      },
     ]
 
   }

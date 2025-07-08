@@ -9,7 +9,7 @@ import { AuthContext } from "../../Context/AuthProvider";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { createUser, updateProfile } = useContext(AuthContext); // Ensure your AuthContext exports createUser
+  const { createUser, UpdatedInfo } = useContext(AuthContext); // Ensure your AuthContext exports createUser
   const [photo, setPhoto] = useState('');
 //   const axiosPublic = UseAxios();
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ const Register = () => {
       displayName: data.name,
       photoURL:photo
     }
-   updateProfile(profileInfo)
+   UpdatedInfo(profileInfo)
     .then( () =>{
       console.log('success uploaded')
 

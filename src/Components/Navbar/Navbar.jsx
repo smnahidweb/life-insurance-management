@@ -21,8 +21,10 @@ const Navbar = () => {
   const navLinks = (
     <>
       <li><NavLink to="/" className="font-semibold">Home</NavLink></li>
-      <li><NavLink to="/about" className="font-semibold">About</NavLink></li>
-      <li><NavLink to="/contact" className="font-semibold">Contact</NavLink></li>
+      <li><NavLink to="/policies" className="font-semibold">All Policies</NavLink></li>
+      <li><NavLink to="/agents" className="font-semibold">Agent</NavLink></li>
+      <li><NavLink to="/faq" className="font-semibold">FAQ</NavLink></li>
+
 
       {
         user && <>

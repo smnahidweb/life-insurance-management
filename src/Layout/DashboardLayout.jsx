@@ -1,11 +1,118 @@
-import React from 'react';
+import { Link, Outlet } from 'react-router'; 
+import {
+  FaHome,
+  FaUser,
+  FaPaperPlane,
+  FaUserShield,
+  FaFileContract,
+  FaMoneyCheckAlt,
+  FaUsersCog,
+  FaBars,
+} from 'react-icons/fa';
+
+import UseUserRole from '../Hooks/UseUserRole';
+import Logo from '../Hooks/Logo';
 
 const DashboardLayout = () => {
+  const { role, isRoleLoading } = UseUserRole();
+
+  if (isRoleLoading) {
     return (
-        <div>
-            
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <p>Loading Dashboard...</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="drawer lg:drawer-open">
+      {/* Toggle for small devices */}
+      <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+
+      <div className="drawer-content flex flex-col">
+        {/* Top bar for small devices */}
+        <div className="w-full flex justify-between items-center p-4 bg-primary lg:hidden">
+          <label htmlFor="dashboard-drawer" className="btn btn-ghost text-xl">
+            <FaBars />
+          </label>
+          <h2 className="text-lg font-bold">Dashboard</h2>
+        </div>
+
+        {/* Page content */}
+        <div className="p-4">
+          <Outlet />
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <div className="drawer-side">
+        <label htmlFor="dashboard-drawer" className="drawer-overlay"></label>
+        <ul className="menu p-4 w-72 min-h-full bg-base-200 text-base-content space-y-2">
+          <Logo />
+
+          <li>
+            <Link to="/dashboard">
+              <FaHome className="mr-2" /> Dashboard Home
+            </Link>
+          </li>
+
+          {/* Role-based Links */}
+          {role === 'admin' && (
+            <>
+              <li>
+                <Link to="/dashboard/manage-applications">
+                  <FaFileContract className="mr-2" /> Manage Applications
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/manage-users">
+                  <FaUsersCog className="mr-2" /> Manage Users
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/manage-policies">
+                  <FaFileContract className="mr-2" /> Manage Policies
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/manage-transactions">
+                  <FaMoneyCheckAlt className="mr-2" /> Manage Transactions
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard/manage-agents">
+                  <FaUser className="mr-2" /> Manage Agents
+                </Link>
+              </li>
+            </>
+          )}
+
+          {/* You can add other roles like agent, customer with their own menus here */}
+          {role === 'agent' && (
+            <>
+              <li>
+                <Link to="/dashboard/applications">
+                  <FaPaperPlane className="mr-2" /> Applications
+                </Link>
+              </li>
+              {/* more agent-specific links */}
+            </>
+          )}
+
+          {role === 'customer' && (
+            <>
+              <li>
+                <Link to="/dashboard/my-policies">
+                  <FaFileContract className="mr-2" /> My Policies
+                </Link>
+              </li>
+              {/* more customer-specific links */}
+            </>
+          )}
+        </ul>
+      </div>
+    </div>
+  );
 };
 
 export default DashboardLayout;
