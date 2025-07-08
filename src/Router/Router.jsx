@@ -4,6 +4,9 @@ import Home from "../Pages/Home/Home";
 import AllPolicies from "../Pages/AllPolicies/AllPolicies";
 import Agents from "../Pages/Agent/Agents";
 import FAQ from "../Pages/FAQ/FAQ";
+import AuthLayout from "../Layout/AuthLayout";
+import Login from "../Pages/Login/Login";
+import Register from "../Pages/Register/Register";
 
  export const router = createBrowserRouter([
   {
@@ -31,6 +34,23 @@ import FAQ from "../Pages/FAQ/FAQ";
     
    ]
   },
+  {
+    path:'/',
+    Component:AuthLayout,
+    children:[
+
+        {
+            path:'/login',
+            Component:Login
+        },
+        {
+            path:'/register',
+            Component:Register
+        }
+
+    ]
+
+  }
 //   auth layout route started
 //   {
 //     path:'/',
