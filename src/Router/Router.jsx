@@ -11,6 +11,13 @@ import DashboardLayout from "../Layout/DashboardLayout";
 import Forbidden from "../Components/Forbidden";
 import PrivateRoute from "./PrivateRoute";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
+import AdminRoute from "./AdminRoute";
+import ManagePolicies from "../Pages/Dashboard/ManagePolicies/ManagePolicies";
+import MyPolicies from "../Pages/Dashboard/Customer/MyPolicies";
+import SubmitReviews from "../Pages/Dashboard/Customer/SubmitReviews";
+import Paymentstatus from "../Pages/Dashboard/Customer/Paymentstatus";
+import PaymentPage from "../Pages/Dashboard/Customer/PaymentPage";
+import ClaimRequest from "../Pages/Dashboard/Customer/ClaimRequest";
 
  export const router = createBrowserRouter([
   {
@@ -69,6 +76,43 @@ import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
         index:true,
         Component:DashboardHome
       },
+
+
+      {
+        path:'my-policies',
+        Component:MyPolicies
+      },
+      {
+        
+        path:'my-reviews',
+        Component:SubmitReviews
+
+      },
+      {
+        path:'payment-status',
+        Component:Paymentstatus
+      },
+      {
+        path:'payments',
+        Component:PaymentPage
+      },
+      {
+        path:'claim-request',
+        Component:ClaimRequest
+      },
+
+
+
+    //   Admin Route is start here
+
+      {
+
+        path:'manage-policies',
+        element:<AdminRoute>
+            <ManagePolicies></ManagePolicies>
+        </AdminRoute>
+        
+      }
     ]
 
   }

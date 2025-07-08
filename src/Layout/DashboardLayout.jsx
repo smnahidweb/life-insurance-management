@@ -52,7 +52,7 @@ const DashboardLayout = () => {
 
           <li>
             <Link to="/dashboard">
-              <FaHome className="mr-2" /> Dashboard Home
+              <FaHome className="mr-2 text-primary" /> Dashboard Home
             </Link>
           </li>
 
@@ -99,16 +99,51 @@ const DashboardLayout = () => {
             </>
           )}
 
-          {role === 'customer' && (
-            <>
-              <li>
-                <Link to="/dashboard/my-policies">
-                  <FaFileContract className="mr-2" /> My Policies
-                </Link>
-              </li>
-              {/* more customer-specific links */}
-            </>
-          )}
+         {role === 'customer' && (
+  <>
+    <li>
+      <Link to="/dashboard/my-policies" className="flex items-center gap-2">
+        <FaFileContract className="text-primary" />
+        <span className="font-medium">My Policies</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/profile" className="flex items-center gap-2">
+        <FaUser className="text-primary" />
+        <span className="font-medium"> My Profile</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/my-reviews" className="flex items-center gap-2">
+        <FaPaperPlane className="text-primary" />
+        <span className="font-medium">Submit Reviews</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/payment-status" className="flex items-center gap-2">
+        <FaMoneyCheckAlt className="text-primary" />
+        <span className="font-medium">Payment Status</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/payments" className="flex items-center gap-2">
+        <FaFileContract className="text-primary" />
+        <span className="font-medium">Payment Page</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/claim-request" className="flex items-center gap-2">
+        <FaUserShield className="text-secondary" />
+        <span className="font-medium">Claim Request</span>
+      </Link>
+    </li>
+  </>
+)}
         </ul>
       </div>
     </div>
