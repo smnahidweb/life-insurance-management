@@ -88,17 +88,35 @@ const DashboardLayout = () => {
           )}
 
           {/* You can add other roles like agent, customer with their own menus here */}
-          {role === 'agent' && (
-            <>
-              <li>
-                <Link to="/dashboard/applications">
-                  <FaPaperPlane className="mr-2" /> Applications
-                </Link>
-              </li>
-              {/* more agent-specific links */}
-            </>
-          )}
+         {role === 'agent' && (
+  <>
+    
 
+    <li>
+      <Link to="/dashboard/assigned-customers" className="flex items-center gap-2">
+        <FaUsersCog className="text-accent" />
+        <span className="font-medium">Assigned Customers</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/manage-blogs" className="flex items-center gap-2">
+        <FaFileContract className="text-secondary" />
+        <span className="font-medium">Manage Blogs</span>
+      </Link>
+    </li>
+
+    <li>
+      <Link to="/dashboard/post-blog" className="flex items-center gap-2">
+        <FaUser className="text-primary" />
+        <span className="font-medium">Post Blog</span>
+      </Link>
+    </li>
+  </>
+)}
+
+
+{/* Customers routes */}
          {role === 'customer' && (
   <>
     <li>

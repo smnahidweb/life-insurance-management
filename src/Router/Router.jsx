@@ -18,6 +18,10 @@ import SubmitReviews from "../Pages/Dashboard/Customer/SubmitReviews";
 import Paymentstatus from "../Pages/Dashboard/Customer/Paymentstatus";
 import PaymentPage from "../Pages/Dashboard/Customer/PaymentPage";
 import ClaimRequest from "../Pages/Dashboard/Customer/ClaimRequest";
+import AgentRoute from "./AgentRoute";
+import AssignedCustomer from "../Pages/Dashboard/Agent/AssignedCustomer";
+import ManageBlogs from "../Pages/Dashboard/Agent/ManageBlogs";
+import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
 
  export const router = createBrowserRouter([
   {
@@ -101,6 +105,26 @@ import ClaimRequest from "../Pages/Dashboard/Customer/ClaimRequest";
         Component:ClaimRequest
       },
 
+
+    //   Agent route start >>
+    {
+        path:'assigned-customers',
+        element:<AgentRoute>
+            <AssignedCustomer></AssignedCustomer>
+        </AgentRoute>
+    },
+    {
+        path:'manage-blogs',
+        element:<AgentRoute>
+            <ManageBlogs></ManageBlogs>
+        </AgentRoute>
+    },
+    {
+        path:"post-blog",
+        element:<AgentRoute>
+            <PostBlogs></PostBlogs>
+        </AgentRoute>
+    },
 
 
     //   Admin Route is start here
