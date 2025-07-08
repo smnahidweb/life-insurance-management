@@ -1,43 +1,75 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import Swal from "sweetalert2";
+// import { AuthContext } from "../../Context/AuthProvider";
+import UseAxios from "../../Hooks/UseAxios";
+import { AuthContext } from "../../Context/AuthProvider";
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
+   const { register, handleSubmit, formState: { errors } } = useForm();
+  const { SignIn, GoogleSignIn } = useContext(AuthContext);
+//   const location = useLocation();
+  const axiosPublic = UseAxios();
   const navigate = useNavigate();
 
-  // Placeholder login function (replace with real auth)
-  const loginUser = async (email, password) => {
-    // Simulate login success/failure
-    if (email === "test@example.com" && password === "Password1") {
-      return { user: { email } };
-    }
-    throw new Error("Invalid email or password");
+  const onSubmit = (data) => {
+    console.log('submitted Data', data);
+    const { email, password } = data;
+    SignIn(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        Swal.fire({
+          title: "Welcome Back, Logged In Successfully!",
+          icon: "success",
+          draggable: true
+        });
+        // navigate(`${location.state ? location.state : '/'}`);
+        console.log(user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  // Placeholder Google login (replace with real Google auth)
-  const loginWithGoogle = async () => {
-    Swal.fire("Google Login", "Google login clicked (implement auth)", "info");
-    // After success, redirect
-    navigate("/");
-  };
+ const handleGoogleLogin = () => {
+  GoogleSignIn()
+    .then(async (result) => {
+      const user = result.user;
 
-  const onSubmit = async (data) => {
-    try {
-      const userCredential = await loginUser(data.email, data.password);
-      Swal.fire("Success", `Welcome back, ${userCredential.user.email}`, "success");
+      const userInfo = {
+        email: user.email,
+        role: 'customer',
+        created_at: new Date().toISOString(),
+        last_log_at: new Date().toISOString()
+      };
+
+      try {
+        await axiosPublic.post('/users', userInfo);
+        console.log("User inserted");
+      } catch (error) {
+        if (error.response?.status === 409) {
+          console.log("User already exists. Skipping insert.");
+        } else {
+          console.error("Insert error", error);
+        }
+      }
+
+      Swal.fire({
+        title: "Logged In Successfully!",
+        icon: "success",
+        draggable: true
+      });
+
       navigate("/");
-    } catch (error) {
-      Swal.fire("Error", error.message, "error");
-    }
-  };
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+  
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6 p-6">
@@ -83,7 +115,7 @@ const Login = () => {
 
       {/* Google Login Button */}
       <button
-        onClick={loginWithGoogle}
+        onClick={handleGoogleLogin}
         className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-100 transition"
       >
         <FcGoogle className="text-xl" />
