@@ -37,7 +37,7 @@ const PopularPolicies = () => {
   return (
     <section className="py-16 ">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center text-primary mb-12">
+        <h2 className="text-4xl font-bold text-center text-[var(--color-primary)] mb-12">
            Popular Insurance Policies
         </h2>
 
@@ -60,7 +60,7 @@ const PopularPolicies = () => {
 
               {/* ✅ Content */}
               <div className="p-5">
-                <h3 className="text-xl font-semibold text-primary mb-2 flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-[var(--color-primary)] mb-2 flex items-center gap-2">
                   <FiShield /> {policy.title}
                 </h3>
 
