@@ -58,6 +58,7 @@ const ManagePolicies = () => {
         durationOptions: data.durationOptions,
         basePremiumRate: Number(data.basePremiumRate),
         image: imageUrl,
+        purchaseCount: 0,
       };
 
       addPolicyMutation.mutate(newPolicy);
