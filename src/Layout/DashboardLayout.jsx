@@ -94,14 +94,14 @@ const DashboardLayout = () => {
 
     <li>
       <Link to="/dashboard/assigned-customers" className="flex items-center gap-2">
-        <FaUsersCog className="text-accent" />
+        <FaUsersCog className="text-primary" />
         <span className="font-medium">Assigned Customers</span>
       </Link>
     </li>
 
     <li>
       <Link to="/dashboard/manage-blogs" className="flex items-center gap-2">
-        <FaFileContract className="text-secondary" />
+        <FaFileContract className="text-primary" />
         <span className="font-medium">Manage Blogs</span>
       </Link>
     </li>
