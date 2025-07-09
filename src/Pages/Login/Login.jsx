@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { FcGoogle } from "react-icons/fc";
 import Swal from "sweetalert2";
 // import { AuthContext } from "../../Context/AuthProvider";
@@ -11,6 +11,9 @@ const Login = () => {
    const { register, handleSubmit, formState: { errors } } = useForm();
   const { SignIn, GoogleSignIn } = useContext(AuthContext);
 //   const location = useLocation();
+
+  const location = useLocation();
+
   const axiosPublic = UseAxios();
   const navigate = useNavigate();
 
@@ -25,7 +28,7 @@ const Login = () => {
           icon: "success",
           draggable: true
         });
-        // navigate(`${location.state ? location.state : '/'}`);
+        navigate(`${location.state ? location.state : '/'}`);
         console.log(user);
       })
       .catch((error) => {
@@ -62,7 +65,7 @@ const Login = () => {
         draggable: true
       });
 
-      navigate("/");
+      navigate(`${location.state ? location.state : '/'}`);
     })
     .catch((error) => {
       console.log(error);

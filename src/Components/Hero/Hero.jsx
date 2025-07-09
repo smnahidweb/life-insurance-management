@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router'; // ✅ FIX: Correct import
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 
@@ -33,45 +33,47 @@ const slides = [
 
 const Hero = () => {
   return (
-    <Swiper
-      modules={[Autoplay, Pagination]}
-      autoplay={{ delay: 5000 }}
-      loop={true}
-      pagination={{ clickable: true }}
-      className="w-screen h-[70vh]"
-    >
-      {slides.map((slide) => (
-        <SwiperSlide key={slide.id}>
-          <div className="w-full h-[70vh] flex flex-col lg:flex-row items-center justify-center px-6 bg-base-100">
-            
-            {/* Left: Text Content */}
-            <div className="w-full lg:w-1/2 text-center lg:text-left space-y-5 z-10 animate-fade-in">
-              <h1 className="text-3xl md:text-5xl font-bold text-primary drop-shadow">
-                {slide.heading}
-              </h1>
-              <p className="text-gray-600 text-lg md:text-xl leading-relaxed">
-                {slide.tagline}
-              </p>
-              <Link
-                to="/quote"
-                className="btn btn-primary text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
-              >
-                Get a Free Quote
-              </Link>
-            </div>
+    <div className="w-full overflow-hidden">
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        autoplay={{ delay: 5000 }}
+        loop={true}
+        pagination={{ clickable: true }}
+        className="w-full"
+      >
+        {slides.map((slide) => (
+          <SwiperSlide key={slide.id}>
+            <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8 max-w-7xl mx-auto px-4 py-12 min-h-[80vh]">
+              
+              {/* Left: Text Content */}
+              <div className="w-full md:w-1/2 text-center md:text-left space-y-5">
+                <h1 className="text-3xl md:text-5xl font-bold text-primary drop-shadow">
+                  {slide.heading}
+                </h1>
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                  {slide.tagline}
+                </p>
+                <Link
+                  to="/quote"
+                  className="btn btn-primary text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+                >
+                  Get a Free Quote
+                </Link>
+              </div>
 
-            {/* Right: Image */}
-            <div className="w-full lg:w-1/2 flex justify-center items-center h-[300px] lg:h-full">
-              <img
-                src={slide.image}
-                alt={slide.heading}
-                className="w-full h-full object-contain"
-              />
+              {/* Right: Image */}
+              <div className="w-full md:w-1/2 flex justify-center items-center">
+                <img
+                  src={slide.image}
+                  alt={slide.heading}
+                  className="max-w-full h-auto object-contain rounded-lg"
+                />
+              </div>
             </div>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
   );
 };
 

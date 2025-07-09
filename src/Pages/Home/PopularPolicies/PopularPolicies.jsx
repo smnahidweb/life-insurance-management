@@ -1,13 +1,15 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router"; 
+import { Link } from "react-router"; // ✅ FIXED!
 import UseAxios from "../../../Hooks/UseAxios";
+
 import {
-  FiShield,
-  FiClock,
-  FiStar,
-  FiEye,
-} from "react-icons/fi";
+  HiOutlineShieldCheck,
+  HiOutlineClock,
+  HiOutlineChartBar,
+  HiOutlineEye,
+  HiOutlineCurrencyBangladeshi,
+} from "react-icons/hi";
 
 const PopularPolicies = () => {
   const axiosPublic = UseAxios();
@@ -22,7 +24,7 @@ const PopularPolicies = () => {
 
   if (isLoading)
     return (
-      <div className="text-center py-10 text-gray-600 text-lg">
+      <div className="text-center py-10 text-gray-500 text-lg">
         Loading popular policies...
       </div>
     );
@@ -45,52 +47,49 @@ const PopularPolicies = () => {
           {popularPolicies.map((policy) => (
             <div
               key={policy._id}
-              className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition duration-300 overflow-hidden"
+              className=" rounded-xl shadow-md hover:shadow-xl border border-gray-200 transition duration-300 overflow-hidden group"
             >
               {/* ✅ Image */}
               <img
                 src={policy.image}
                 alt={policy.title}
-                className="h-48 w-full object-cover"
-                onError={(e) =>
-                  (e.target.src =
-                    "https://via.placeholder.com/400x300?text=No+Image")
-                }
+                className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
+                
               />
 
               {/* ✅ Content */}
-              <div className="p-5">
-                <h3 className="text-xl font-semibold text-[var(--color-primary)] mb-2 flex items-center gap-2">
-                  <FiShield /> {policy.title}
+              <div className="p-5 space-y-4">
+                <h3 className="text-xl font-semibold text-[var(--color-primary)] flex items-center gap-2">
+                  <HiOutlineShieldCheck className="text-[var(--color-primary)]" />
+                  {policy.title}
                 </h3>
 
-                <div className="text-gray-700 space-y-1 text-sm">
+                <div className="text-gray-700 space-y-2 text-sm">
                   <p className="flex items-center gap-2">
-                    <FiClock className="text-primary" />
-                    <span className="font-medium">Duration:</span>{" "}
-                    {policy.durationOptions}
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <FiShield className="text-green-600" />
+                    <HiOutlineCurrencyBangladeshi className="text-green-600" />
                     <span className="font-medium">Coverage:</span>{" "}
                     {policy.coverageRange}
                   </p>
                   <p className="flex items-center gap-2">
-                    <FiStar className="text-yellow-500" />
+                    <HiOutlineClock className="text-blue-500" />
+                    <span className="font-medium">Duration:</span>{" "}
+                    {policy.durationOptions}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <HiOutlineChartBar className="text-yellow-600" />
                     <span className="font-medium">Popularity:</span>{" "}
                     {policy.purchaseCount} Purchases
                   </p>
                 </div>
 
-                <div className="mt-4">
-                  <Link
-                    to={`/policies/${policy._id}`}
-                    className="flex items-center justify-center gap-2 w-full text-center bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition"
-                  >
-                    <FiEye />
-                    View Details
-                  </Link>
-                </div>
+                {/* CTA */}
+                <Link
+                  to={`/policies/${policy._id}`}
+                  className="mt-4 inline-flex items-center justify-center gap-2 w-full bg-[var(--color-primary)] text-white py-2 px-4 rounded-md hover:bg-opacity-90 transition"
+                >
+                  <HiOutlineEye />
+                  View Details
+                </Link>
               </div>
             </div>
           ))}

@@ -22,6 +22,8 @@ import AgentRoute from "./AgentRoute";
 import AssignedCustomer from "../Pages/Dashboard/Agent/AssignedCustomer";
 import ManageBlogs from "../Pages/Dashboard/Agent/ManageBlogs";
 import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
+import PoliciesDetails from "../Pages/Home/PoliciesDetails/PoliciesDetails";
+import Quote from "../Pages/Home/Quote";
 
  export const router = createBrowserRouter([
   {
@@ -49,6 +51,17 @@ import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
     {
         path:'/forbidden',
         Component:Forbidden
+    },
+    
+      {
+          path:"/policies/:id",
+          element:
+            <PoliciesDetails></PoliciesDetails>,
+    },{
+      path:'/quote',
+      element:<PrivateRoute>
+        <Quote></Quote>
+      </PrivateRoute>
     }
     
    ]
@@ -65,7 +78,8 @@ import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
         {
             path:'/register',
             Component:Register
-        }
+        },
+        
 
     ]
 
@@ -80,6 +94,7 @@ import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
         index:true,
         Component:DashboardHome
       },
+      
 
 
       {
