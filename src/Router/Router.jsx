@@ -26,6 +26,7 @@ import PoliciesDetails from "../Pages/Home/PoliciesDetails/PoliciesDetails";
 import Quote from "../Pages/Home/Quote";
 import ApplyForm from "../Pages/Home/ApplyForm";
 import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
+import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 
  export const router = createBrowserRouter([
   {
@@ -169,6 +170,11 @@ import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
           <ManageApplication></ManageApplication>
         </AdminRoute>
 
+      },{
+        path:'manage-users',
+        element:<AdminRoute>
+          <ManageUsers></ManageUsers>
+        </AdminRoute>
       }
     ]
 
