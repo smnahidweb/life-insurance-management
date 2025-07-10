@@ -28,6 +28,7 @@ import ApplyForm from "../Pages/Home/ApplyForm";
 import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
+import ManageAgent from "../Pages/Dashboard/Agent/ManageAgent";
 
  export const router = createBrowserRouter([
   {
@@ -182,6 +183,12 @@ import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
         path:'manage-users',
         element:<AdminRoute>
           <ManageUsers></ManageUsers>
+        </AdminRoute>
+      },
+      {
+        path:'manage-agents',
+        element:<AdminRoute>
+          <ManageAgent></ManageAgent>
         </AdminRoute>
       }
     ]

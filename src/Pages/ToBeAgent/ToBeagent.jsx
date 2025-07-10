@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-// import UseAxiosSecure from "../../Hooks/UseAxiosSecure";
-import { FaUserTie } from "react-icons/fa";
 import axios from "axios";
+
+import { FaUserTie } from "react-icons/fa";
 import UseAxiosSecure from "../../Hooks/UseAxiosSecure";
+import { AuthContext } from "../../Context/AuthProvider";
 
 const ToBeAgentForm = () => {
   const axiosSecure = UseAxiosSecure();
+  const { user } = useContext(AuthContext);
+
   const {
     register,
     handleSubmit,
@@ -17,8 +20,9 @@ const ToBeAgentForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Upload image to imgbb
-      let imageUrl = "";
+      // Upload custom image to imgbb if user uploaded a new file
+      let imageUrl = user?.photoURL || ""; // default to user's photo
+
       if (data.image?.[0]) {
         const formData = new FormData();
         formData.append("image", data.image[0]);
@@ -31,8 +35,9 @@ const ToBeAgentForm = () => {
       }
 
       const agentData = {
-        fullName: data.fullName,
-        email: data.email,
+        userId: user?.uid,
+        fullName: user?.displayName,
+        email: user?.email,
         phone: data.phone,
         nationalId: data.nationalId,
         education: data.education,
@@ -41,6 +46,7 @@ const ToBeAgentForm = () => {
         linkedin: data.linkedin,
         message: data.message,
         image: imageUrl,
+        status: "pending",
       };
 
       const response = await axiosSecure.post("/to-be-agent", agentData);
@@ -64,20 +70,33 @@ const ToBeAgentForm = () => {
         Become an Agent
       </h2>
 
+      {/* Show User Photo */}
+      {user?.photoURL && (
+        <div className="flex justify-center mb-6">
+          <img
+            src={user.photoURL}
+            alt="User Avatar"
+            className="w-24 h-24 rounded-full object-cover border-2 border-[var(--color-primary)]"
+          />
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-4 bg-white shadow-lg p-8 rounded-lg"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
-            {...register("fullName", { required: true })}
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            defaultValue={user?.displayName}
+            disabled
+            className="input input-bordered w-full bg-gray-100 text-gray-600 cursor-not-allowed"
             placeholder="Full Name"
           />
           <input
             type="email"
-            {...register("email", { required: true })}
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            defaultValue={user?.email}
+            disabled
+            className="input input-bordered w-full bg-gray-100 text-gray-600 cursor-not-allowed"
             placeholder="Email Address"
           />
           <input
@@ -113,10 +132,10 @@ const ToBeAgentForm = () => {
           />
         </div>
 
-        {/* ✅ Image Upload */}
+        {/* Image Upload */}
         <input
           type="file"
-        //   {...register("image", { required: true })}
+          {...register("image")}
           accept="image/*"
           className="file-input file-input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
         />
