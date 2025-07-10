@@ -47,6 +47,7 @@ const ApplicationForm = () => {
     mutationFn: async (formData) => {
       const application = {
         userEmail: user?.email,
+        ApplicantName:user?.displayName,
         policyId: policy._id,
         policyTitle: policy.title,
         quoteInfo: {

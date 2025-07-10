@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   HiOutlineUser,
@@ -10,18 +10,34 @@ import {
 } from "react-icons/hi";
 import { AuthContext } from "../../Context/AuthProvider";
 import UseAxiosSecure from "../../Hooks/UseAxiosSecure";
-
+import Swal from "sweetalert2";
 
 const Quote = () => {
   const navigate = useNavigate();
   const { id: policyId } = useParams();
-  console.log(policyId)
-
   const { user } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
 
   const [quote, setQuote] = useState(null);
-  const [quoteId, setQuoteId] = useState(null); // ✅ track saved quote ID
+  const [quoteId, setQuoteId] = useState(null);
+  const [alreadyApplied, setAlreadyApplied] = useState(false); // ✅ check if already applied
+
+  // ✅ Check if user has already applied for this policy
+  useEffect(() => {
+    const checkExistingApplication = async () => {
+      try {
+        const res = await axiosSecure.get(`/applications?email=${user?.email}`);
+        const existing = res.data.find(app => app.policyId === policyId);
+        if (existing) setAlreadyApplied(true);
+      } catch (err) {
+        console.error("Error checking existing application:", err);
+      }
+    };
+
+    if (user?.email && policyId) {
+      checkExistingApplication();
+    }
+  }, [user?.email, policyId, axiosSecure]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +49,7 @@ const Quote = () => {
     const duration = parseInt(form.duration.value);
     const smoker = form.smoker.value === "yes";
 
-    // 🧮 Premium calculation logic
+    // 🧮 Premium calculation
     const baseRate = 0.05;
     let annual = (coverage * baseRate) / duration;
 
@@ -64,12 +80,13 @@ const Quote = () => {
     try {
       const res = await axiosSecure.post("/quotes", quoteData);
       if (res.data.insertedId) {
-        setQuoteId(res.data.insertedId); // ✅ Save for next step
+        setQuoteId(res.data.insertedId);
         setQuote({ monthly, annual });
         // toast.success("Quote saved successfully");
       }
     } catch (error) {
-    //   toast.error("Failed to save quote");
+      console.error("Failed to save quote", error);
+      // toast.error("Failed to save quote");
     }
   };
 
@@ -153,7 +170,17 @@ const Quote = () => {
           {quote && quoteId && (
             <button
               type="button"
-              onClick={() => navigate(`/apply/${policyId}`)} // ✅ pass quote ID
+              onClick={() => {
+                if (alreadyApplied) {
+                  Swal.fire(
+                    "Already Applied",
+                    "You have already applied for this policy.",
+                    "warning"
+                  );
+                  return;
+                }
+                navigate(`/apply/${policyId}`);
+              }}
               className="btn btn-outline text-[var(--color-primary)]"
             >
               Apply for Policy
@@ -162,7 +189,7 @@ const Quote = () => {
         </div>
       </form>
 
-      {/* Result */}
+      {/* Premium Display */}
       {quote && (
         <div className="mt-8 border border-[var(--color-primary)] rounded-xl p-6 text-center shadow">
           <h3 className="text-2xl font-semibold text-[var(--color-primary)]">

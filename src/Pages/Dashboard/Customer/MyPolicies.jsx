@@ -1,7 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-// import UseAxiosSecure from "../../Hooks/UseAxiosSecure";
-// import { AuthContext } from "../../Context/AuthProvider";
 import Swal from "sweetalert2";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import { AuthContext } from "../../../Context/AuthProvider";
@@ -10,12 +8,14 @@ const MyPolicies = () => {
   const axiosSecure = UseAxiosSecure();
   const { user } = useContext(AuthContext);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const { data: applications = [], isLoading } = useQuery({
+  // Fetch applications for logged-in user
+  const { data: applications = [], isLoading, refetch } = useQuery({
     queryKey: ["myPolicies", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/applications?email=${user.email}`);
+      const res = await axiosSecure.get(`/application?email=${user.email}`);
       return res.data;
     },
   });
@@ -27,6 +27,8 @@ const MyPolicies = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+
     const form = e.target;
     const review = {
       rating: parseInt(form.rating.value),
@@ -37,11 +39,32 @@ const MyPolicies = () => {
       submittedAt: new Date(),
     };
 
-    const res = await axiosSecure.post("/reviews", review);
-    if (res.data.insertedId) {
-      Swal.fire("Thank you!", "Review submitted successfully.", "success");
-      form.reset();
-      document.getElementById("review_modal").close();
+    try {
+      // 1. Post the review
+      const res = await axiosSecure.post("/reviews", review);
+      if (res.data.insertedId) {
+        // 2. Patch the application to mark reviewSubmitted: true
+        await axiosSecure.patch(`/applications/${selectedApplication._id}`, {
+          reviewSubmitted: true,
+        });
+
+        Swal.fire("Thank you!", "Review submitted successfully.", "success");
+
+        form.reset();
+        document.getElementById("review_modal").close();
+
+        // 3. Refetch the applications list to update UI
+        refetch();
+      }
+    } catch (error) {
+      if (error.response?.status === 400) {
+        Swal.fire("Already Reviewed", "You have already reviewed this policy.", "info");
+      } else {
+        console.error("Review submission failed", error);
+        Swal.fire("Oops!", "Failed to submit review.", "error");
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -84,12 +107,18 @@ const MyPolicies = () => {
                 <td>{app.quoteInfo.duration} yrs</td>
                 <td>${app.quoteInfo.annual}</td>
                 <td>
-                  <button
-                    onClick={() => openReviewModal(app)}
-                    className="btn btn-sm btn-primary"
-                  >
-                    Give Review
-                  </button>
+                  {app.reviewSubmitted ? (
+                    <button className="btn btn-sm btn-success cursor-default" disabled>
+                      Reviewed
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => openReviewModal(app)}
+                      className="btn btn-sm btn-primary"
+                    >
+                      Give Review
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -103,7 +132,11 @@ const MyPolicies = () => {
           <h3 className="font-bold text-lg mb-4">Submit a Review</h3>
           <form onSubmit={handleReviewSubmit}>
             <label className="block mb-1 text-sm">Rating (1-5)</label>
-            <select name="rating" className="select select-bordered w-full mb-3" required>
+            <select
+              name="rating"
+              className="select select-bordered w-full mb-3"
+              required
+            >
               <option value="">Choose rating</option>
               <option value="1">1 Star</option>
               <option value="2">2 Stars</option>
@@ -121,7 +154,13 @@ const MyPolicies = () => {
             ></textarea>
 
             <div className="modal-action">
-              <button type="submit" className="btn btn-primary">Submit</button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={submitting}
+              >
+                {submitting ? "Submitting..." : "Submit"}
+              </button>
               <button
                 type="button"
                 onClick={() => document.getElementById("review_modal").close()}

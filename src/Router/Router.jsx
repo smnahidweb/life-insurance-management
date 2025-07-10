@@ -25,6 +25,7 @@ import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
 import PoliciesDetails from "../Pages/Home/PoliciesDetails/PoliciesDetails";
 import Quote from "../Pages/Home/Quote";
 import ApplyForm from "../Pages/Home/ApplyForm";
+import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
 
  export const router = createBrowserRouter([
   {
@@ -161,6 +162,13 @@ import ApplyForm from "../Pages/Home/ApplyForm";
             <ManagePolicies></ManagePolicies>
         </AdminRoute>
         
+      },
+      {
+        path:'manage-applications',
+        element:<AdminRoute>
+          <ManageApplication></ManageApplication>
+        </AdminRoute>
+
       }
     ]
 
