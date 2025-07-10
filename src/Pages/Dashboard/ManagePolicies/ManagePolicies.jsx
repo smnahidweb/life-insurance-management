@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaFileAlt } from "react-icons/fa";
 
 const ManagePolicies = () => {
   const axiosSecure = UseAxiosSecure();
@@ -87,7 +87,10 @@ const ManagePolicies = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto min-h-screen">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-[var(--color-primary)]">Manage Policies</h1>
+       <h1 className="text-3xl font-bold text-[var(--color-primary)] flex items-center gap-2">
+  <FaFileAlt className="text-[var(--color-primary)]" />
+  Manage Policies
+</h1>
         <button
           onClick={() => {
             reset();

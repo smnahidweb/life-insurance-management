@@ -27,6 +27,7 @@ import Quote from "../Pages/Home/Quote";
 import ApplyForm from "../Pages/Home/ApplyForm";
 import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
+import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
 
  export const router = createBrowserRouter([
   {
@@ -65,6 +66,13 @@ import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
       element:<PrivateRoute>
         <Quote></Quote>
       </PrivateRoute>
+    },
+    {
+      path:'/to-be-agent',
+      element:<PrivateRoute>
+        <ToBeAgentForm></ToBeAgentForm>
+      </PrivateRoute>
+
     },
     {
   path: "/apply/:quoteId",
