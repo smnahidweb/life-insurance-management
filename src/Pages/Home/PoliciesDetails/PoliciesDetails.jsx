@@ -11,6 +11,7 @@ import {
   HiOutlineCurrencyBangladeshi,
   HiOutlineChartBar,
   HiOutlineCalculator,
+  HiOutlineCurrencyDollar,
 } from "react-icons/hi";
 
 const PoliciesDetails = () => {
@@ -75,7 +76,7 @@ const PoliciesDetails = () => {
               <HiOutlineShieldCheck className="w-6 h-6 text-[var(--color-primary)]" />
               <div>
                 <p className="text-gray-500 font-medium">Coverage</p>
-                <p className="text-gray-800">{policy.coverageRange}</p>
+                <p className="text-gray-800">${policy.coverageRange}</p>
               </div>
             </div>
 
@@ -90,7 +91,7 @@ const PoliciesDetails = () => {
 
             {/* Premium */}
             <div className="border-l-4 border-[var(--color-primary)] bg-white p-4 rounded-md shadow-sm flex gap-3 items-center">
-              <HiOutlineCurrencyBangladeshi className="w-6 h-6 text-[var(--color-primary)]" />
+              <HiOutlineCurrencyDollar className="w-6 h-6 text-[var(--color-primary)]" />
               <div>
                 <p className="text-gray-500 font-medium">Base Premium</p>
                 <p className="text-gray-800">${policy.basePremiumRate} </p>
@@ -110,7 +111,7 @@ const PoliciesDetails = () => {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Link
-              to="/quote"
+              to={`/quote/${id}`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white rounded-md hover:bg-opacity-90 transition-all font-medium"
             >
               <HiOutlineCalculator className="w-5 h-5" />

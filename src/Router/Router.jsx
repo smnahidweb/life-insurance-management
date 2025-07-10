@@ -24,6 +24,7 @@ import ManageBlogs from "../Pages/Dashboard/Agent/ManageBlogs";
 import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
 import PoliciesDetails from "../Pages/Home/PoliciesDetails/PoliciesDetails";
 import Quote from "../Pages/Home/Quote";
+import ApplyForm from "../Pages/Home/ApplyForm";
 
  export const router = createBrowserRouter([
   {
@@ -58,11 +59,20 @@ import Quote from "../Pages/Home/Quote";
           element:
             <PoliciesDetails></PoliciesDetails>,
     },{
-      path:'/quote',
+      path:'/quote/:id',
       element:<PrivateRoute>
         <Quote></Quote>
       </PrivateRoute>
-    }
+    },
+    {
+  path: "/apply/:quoteId",
+  element: (
+    <PrivateRoute>
+      <ApplyForm />
+    </PrivateRoute>
+  )
+}
+
     
    ]
   },
