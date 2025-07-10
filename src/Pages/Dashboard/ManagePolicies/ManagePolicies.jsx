@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
 const ManagePolicies = () => {
   const axiosSecure = UseAxiosSecure();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   const {
     register,
@@ -24,29 +26,40 @@ const ManagePolicies = () => {
     },
   });
 
-  const addPolicyMutation = useMutation({
-    mutationFn: async (newPolicy) => {
-      const res = await axiosSecure.post("/policies", newPolicy);
-      return res.data;
+  const addOrUpdatePolicy = useMutation({
+    mutationFn: async (policy) => {
+      if (editData) {
+        return await axiosSecure.put(`/policy/${editData._id}`, policy);
+      } else {
+        return await axiosSecure.post("/policies", policy);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["policies"]);
       reset();
       setModalOpen(false);
+      setEditData(null);
     },
   });
 
-  const onSubmit = async (data) => {
-    const imageFile = data.image[0];
-    const formData = new FormData();
-    formData.append("image", imageFile);
+  const deletePolicy = useMutation({
+    mutationFn: async (id) => await axiosSecure.delete(`/policiesDelete/${id}`),
+    onSuccess: () => queryClient.invalidateQueries(["policies"]),
+  });
 
+  const onSubmit = async (data) => {
     try {
-      const imgbbRes = await axios.post(
-        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Key}`,
-        formData
-      );
-      const imageUrl = imgbbRes.data.data.url;
+      let imageUrl = editData?.image || "";
+
+      if (data.image?.[0]) {
+        const formData = new FormData();
+        formData.append("image", data.image[0]);
+        const imgbbRes = await axios.post(
+          `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Key}`,
+          formData
+        );
+        imageUrl = imgbbRes.data.data.url;
+      }
 
       const newPolicy = {
         title: data.title,
@@ -58,92 +71,184 @@ const ManagePolicies = () => {
         durationOptions: data.durationOptions,
         basePremiumRate: Number(data.basePremiumRate),
         image: imageUrl,
-        purchaseCount: 0,
       };
 
-      addPolicyMutation.mutate(newPolicy);
+      addOrUpdatePolicy.mutate(newPolicy);
     } catch (err) {
       console.error("Image upload failed:", err);
     }
   };
 
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Manage Policies</h1>
+  const openEditModal = (policy) => {
+    setEditData(policy);
+    setModalOpen(true);
+  };
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className="mb-4 px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark"
-      >
-        Add New Policy
-      </button>
+  return (
+    <div className="p-6 max-w-7xl mx-auto min-h-screen">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-[var(--color-primary)]">Manage Policies</h1>
+        <button
+          onClick={() => {
+            reset();
+            setEditData(null);
+            setModalOpen(true);
+          }}
+          className="btn btn-primary flex items-center gap-2"
+        >
+          <FaPlus /> Add Policy
+        </button>
+      </div>
 
       {isLoading && <p className="text-center text-gray-500">Loading...</p>}
       {isError && <p className="text-center text-red-500">Failed to load policies.</p>}
 
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3">Title</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Age</th>
-              <th className="p-3">Premium</th>
+        <table className="table table-zebra w-full">
+          <thead>
+            <tr className="bg-base-200">
+              <th>Image</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Age</th>
+              <th>Premium</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {policies.map((policy) => (
-              <tr key={policy._id} className="hover:bg-gray-50">
-                <td className="p-2">{policy.title}</td>
-                <td className="p-2">{policy.category}</td>
-                <td className="p-2">{policy.minAge} - {policy.maxAge}</td>
-                <td className="p-2">${policy.basePremiumRate}</td>
+            {policies.map((p) => (
+              <tr key={p._id}>
+                <td>
+                  <img
+                    src={p.image}
+                    alt={p.title}
+                    className="w-16 h-10 object-cover rounded"
+                  />
+                </td>
+                <td>{p.title}</td>
+                <td>{p.category}</td>
+                <td>
+                  {p.minAge} - {p.maxAge}
+                </td>
+                <td>${p.basePremiumRate}</td>
+                <td className="flex gap-2">
+                  <button
+                    className="btn btn-xs btn-info"
+                    onClick={() => openEditModal(p)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="btn btn-xs btn-error"
+                    onClick={() => deletePolicy.mutate(p._id)}
+                  >
+                    <FaTrash />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Modal Form */}
+      {/* Modal */}
       {modalOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={() => setModalOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-40 flex justify-center z-50 overflow-auto"
+          style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+          onClick={() => {
+            setModalOpen(false);
+            setEditData(null);
+          }}
         >
           <div
-            className="bg-white rounded-lg p-6 w-full max-w-3xl"
+            className="bg-white rounded-xl shadow-xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
+            style={{ minHeight: "400px" }}
           >
-            <h2 className="text-2xl font-bold mb-4">Add New Policy</h2>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <input {...register("title", { required: true })} placeholder="Policy Title" className="input input-bordered w-full" />
-              <select {...register("category", { required: true })} className="select select-bordered w-full">
+            <h2 className="text-3xl font-semibold mb-6 text-[var(--color-primary)]">
+              {editData ? "Edit Policy" : "Add New Policy"}
+            </h2>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-6">
+              <input
+                defaultValue={editData?.title}
+                {...register("title", { required: true })}
+                placeholder="Policy Title"
+                className="input input-bordered col-span-2"
+              />
+              <select
+                defaultValue={editData?.category}
+                {...register("category", { required: true })}
+                className="select select-bordered col-span-2"
+              >
                 <option value="">Select Category</option>
                 <option value="Term Life">Term Life</option>
                 <option value="Senior">Senior</option>
                 <option value="Whole Life">Whole Life</option>
                 <option value="Universal Life">Universal Life</option>
               </select>
-              <textarea {...register("description", { required: true })} placeholder="Description" className="textarea textarea-bordered w-full" />
-              <div className="flex gap-4">
-                <input type="number" {...register("minAge", { required: true })} placeholder="Min Age" className="input input-bordered w-full" />
-                <input type="number" {...register("maxAge", { required: true })} placeholder="Max Age" className="input input-bordered w-full" />
-              </div>
-              <input {...register("coverageRange", { required: true })} placeholder="Coverage Range" className="input input-bordered w-full" />
-              <input {...register("durationOptions", { required: true })} placeholder="Duration Options" className="input input-bordered w-full" />
-              <input type="number" {...register("basePremiumRate", { required: true })} placeholder="Base Premium Rate" className="input input-bordered w-full" />
-              
-              {/* ✅ Image File Input */}
+              <textarea
+                defaultValue={editData?.description}
+                {...register("description", { required: true })}
+                placeholder="Description"
+                className="textarea textarea-bordered col-span-2"
+                rows={4}
+              />
+              <input
+                defaultValue={editData?.minAge}
+                type="number"
+                {...register("minAge", { required: true })}
+                placeholder="Min Age"
+                className="input input-bordered"
+              />
+              <input
+                defaultValue={editData?.maxAge}
+                type="number"
+                {...register("maxAge", { required: true })}
+                placeholder="Max Age"
+                className="input input-bordered"
+              />
+              <input
+                defaultValue={editData?.coverageRange}
+                {...register("coverageRange", { required: true })}
+                placeholder="Coverage Range"
+                className="input input-bordered col-span-2"
+              />
+              <input
+                defaultValue={editData?.durationOptions}
+                {...register("durationOptions", { required: true })}
+                placeholder="Duration Options"
+                className="input input-bordered col-span-2"
+              />
+              <input
+                defaultValue={editData?.basePremiumRate}
+                type="number"
+                {...register("basePremiumRate", { required: true })}
+                placeholder="Base Premium Rate"
+                className="input input-bordered col-span-2"
+              />
               <input
                 type="file"
-                {...register("image", { required: true })}
+                {...register("image")}
                 accept="image/*"
-                className="file-input file-input-bordered w-full"
+                className="file-input file-input-bordered col-span-2"
               />
 
-              <div className="flex justify-end gap-3">
-                <button type="button" onClick={() => setModalOpen(false)} className="btn btn-ghost">Cancel</button>
-                <button type="submit" className="btn btn-primary">Add Policy</button>
+              <div className="col-span-2 flex justify-end gap-4 pt-4 border-t border-gray-200 mt-6">
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    setEditData(null);
+                  }}
+                  type="button"
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  {editData ? "Update" : "Add"} Policy
+                </button>
               </div>
             </form>
           </div>
