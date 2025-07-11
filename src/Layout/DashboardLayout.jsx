@@ -99,12 +99,12 @@ const DashboardLayout = () => {
       </Link>
     </li>
 
-    {/* <li>
-      <Link to="/dashboard/manage-blogs" className="flex items-center gap-2">
+    <li>
+      <Link to="/dashboard/claim-review" className="flex items-center gap-2">
         <FaFileContract className="text-primary" />
-        <span className="font-medium">Manage Blogs</span>
+        <span className="font-medium">Claim Review</span>
       </Link>
-    </li> */}
+    </li>
 
     <li>
       <Link to="/dashboard/post-blog" className="flex items-center gap-2">

@@ -2,9 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/AuthProvider";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
-
-// ✅ Your ImgBB API key
-
+import { FaShieldAlt } from "react-icons/fa";
 
 const ClaimRequest = () => {
   const { user } = useContext(AuthContext);
@@ -43,9 +41,6 @@ const ClaimRequest = () => {
     }
   }, [user?.email, axiosSecure]);
 
-  const hasPendingClaim = (policyId) =>
-    claims.some((c) => c.policyId === policyId && c.status.toLowerCase() === "pending");
-
   const openClaimForm = (application) => {
     setSelectedApp(application);
     setShowForm(true);
@@ -59,9 +54,10 @@ const ClaimRequest = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow my-10">
-      <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-6">
-        Your Approved Policies & Claims
-      </h2>
+      <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-6 flex items-center gap-2">
+  <FaShieldAlt className="text-[var(--color-primary)]" />
+  Your Approved Policies & Claims
+</h2>
 
       <table className="table w-full border rounded-lg">
         <thead>
@@ -74,21 +70,31 @@ const ClaimRequest = () => {
         <tbody>
           {approvedApplications.map((app) => {
             const claim = claims.find((c) => c.policyId === app.policyId);
+            const status = claim?.status || "No Claims";
+
             return (
               <tr key={app._id} className="hover">
                 <td>{app.policyTitle}</td>
-                <td>{claim ? claim.status : "No Claims"}</td>
+                <td>{status}</td>
                 <td>
-                  {!hasPendingClaim(app.policyId) ? (
+                  {!claim ? (
                     <button
                       onClick={() => openClaimForm(app)}
                       className="btn btn-sm bg-[var(--color-primary)] text-white"
                     >
                       File Claim
                     </button>
-                  ) : (
+                  ) : status === "Pending" ? (
                     <button disabled className="btn btn-sm btn-disabled">
                       Pending Claim
+                    </button>
+                  ) : status === "Approved" ? (
+                    <button disabled className="btn btn-sm bg-green-500 text-black">
+                      Approved
+                    </button>
+                  ) : (
+                    <button disabled className="btn btn-sm btn-disabled">
+                      {status}
                     </button>
                   )}
                 </td>

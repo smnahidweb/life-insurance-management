@@ -29,6 +29,7 @@ import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
 import ManageBlogs from "../Pages/Dashboard/Admin/ManageBlogs";
+import AgentClaimReview from "../Pages/Dashboard/Agent/AgentClaimReview";
 
 
  export const router = createBrowserRouter([
@@ -150,12 +151,12 @@ import ManageBlogs from "../Pages/Dashboard/Admin/ManageBlogs";
             <AssignedCustomer></AssignedCustomer>
         </AgentRoute>
     },
-    // {
-    //     path:'manage-blogs',
-    //     element:<AgentRoute>
-    //         <ManageBlogs></ManageBlogs>
-    //     </AgentRoute>
-    // },
+    {
+      path:'claim-review',
+      element:<AgentRoute>
+        <AgentClaimReview></AgentClaimReview>
+      </AgentRoute>
+    },
     {
         path:"post-blog",
         element:<AgentRoute>

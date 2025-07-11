@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import { AuthContext } from "../../../Context/AuthProvider";
+import { FaClipboardList } from "react-icons/fa";
 
 const MyPolicies = () => {
   const axiosSecure = UseAxiosSecure();
@@ -72,7 +73,10 @@ const MyPolicies = () => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">My Policies</h2>
+   <h2 className="text-2xl font-bold mb-6 text-[var(--color-primary)] flex items-center gap-2">
+  <FaClipboardList className="text-[var(--color-primary)]" />
+  My Policies
+</h2>
 
       <div className="overflow-x-auto">
         <table className="table w-full">
