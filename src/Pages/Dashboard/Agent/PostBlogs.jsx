@@ -184,7 +184,7 @@ const PostBlogs = () => {
   <label className="block text-sm font-medium mb-1">Author</label>
   <input
     type="text"
-    value={user?.displayName || "Unknown"}
+    value={editBlog.author || "Unknown"}
     readOnly
     className="input input-bordered w-full bg-gray-100"
   />

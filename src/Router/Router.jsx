@@ -20,7 +20,7 @@ import PaymentPage from "../Pages/Dashboard/Customer/PaymentPage";
 import ClaimRequest from "../Pages/Dashboard/Customer/ClaimRequest";
 import AgentRoute from "./AgentRoute";
 import AssignedCustomer from "../Pages/Dashboard/Agent/AssignedCustomer";
-import ManageBlogs from "../Pages/Dashboard/Agent/ManageBlogs";
+// import ManageBlogs from "../Pages/Dashboard/Agent/ManageBlogs";
 import PostBlogs from "../Pages/Dashboard/Agent/PostBlogs";
 import PoliciesDetails from "../Pages/Home/PoliciesDetails/PoliciesDetails";
 import Quote from "../Pages/Home/Quote";
@@ -28,7 +28,8 @@ import ApplyForm from "../Pages/Home/ApplyForm";
 import ManageApplication from "../Pages/Dashboard/Admin/ManageApplication";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
-import ManageAgent from "../Pages/Dashboard/Agent/ManageAgent";
+import ManageBlogs from "../Pages/Dashboard/Admin/ManageBlogs";
+
 
  export const router = createBrowserRouter([
   {
@@ -149,12 +150,12 @@ import ManageAgent from "../Pages/Dashboard/Agent/ManageAgent";
             <AssignedCustomer></AssignedCustomer>
         </AgentRoute>
     },
-    {
-        path:'manage-blogs',
-        element:<AgentRoute>
-            <ManageBlogs></ManageBlogs>
-        </AgentRoute>
-    },
+    // {
+    //     path:'manage-blogs',
+    //     element:<AgentRoute>
+    //         <ManageBlogs></ManageBlogs>
+    //     </AgentRoute>
+    // },
     {
         path:"post-blog",
         element:<AgentRoute>
@@ -186,102 +187,14 @@ import ManageAgent from "../Pages/Dashboard/Agent/ManageAgent";
         </AdminRoute>
       },
       {
-        path:'manage-agents',
+        path:'manage-blogs',
         element:<AdminRoute>
-          <ManageAgent></ManageAgent>
+          <ManageBlogs></ManageBlogs>
         </AdminRoute>
+
       }
     ]
 
   }
-//   auth layout route started
-//   {
-//     path:'/',
-//     Component:AuthLayout,
-//     children:[
-//       {
-//         path:'/login',
-//         Component:Login
-//       },{
-//         path:'/register',
-//         Component:Register
-//       }
-//     ]
-//   },
-// Dashboard layout is started
-//   {
-//     path:'/dashboard',
-//     element:<PrivateRoute>
-//       <Dashboard></Dashboard>
-//     </PrivateRoute>,
-//     children:[
-//       {
-//         index:true,
-//         Component:DashBoardHome
-//       },
-//       {
-//         path:'myParcels',
-//         Component:MyParcel
-//       },
-//       {
-//         path:'payment/:parcelId',
-//         Component:Payment
-//       },
-//       {
-//         path:'paymentHistory',
-//         Component:PaymentHistory
-//       },
 
-
-
-//       // riders routes
-//       {
-//         path:'pending-tasks',
-//         element:<RiderRoute>
-//           <PendingTask></PendingTask>
-//         </RiderRoute>
-
-//       },
-//       {
-//         path:'delivered-task',
-//         element:<RiderRoute>
-//           <Deliveredtask></Deliveredtask>
-//         </RiderRoute>
-//       },
-//       {
-//         path:'myEarning',
-//         element:<RiderRoute>
-//           <MyEarning></MyEarning>
-//         </RiderRoute>
-
-//       },
-
-
-//       {
-//         path:'pendingRiders',
-//         element: <AdminRoute>
-//           <PendingRiders></PendingRiders>
-//         </AdminRoute>
-//       }
-//       ,{
-//         path:'activeRiders',
-//        element:<AdminRoute>
-//         <ActiveRiders></ActiveRiders>
-//        </AdminRoute>
-
-//       },
-//       {
-//         path:"makeAdmin",
-//         element:<AdminRoute>
-//           <MakeAdmin></MakeAdmin>
-//         </AdminRoute>
-//       },{
-//         path:'assign-rider',
-//         element:<AdminRoute>
-//           <AssignParcel></AssignParcel>
-//         </AdminRoute>
-//       }
-
-//     ]
-//   }
 ])

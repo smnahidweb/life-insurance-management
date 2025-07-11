@@ -25,7 +25,7 @@ const AssignedCustomers = () => {
   const updateStatus = useMutation({
     mutationFn: async ({ appId, newStatus, policyId }) => {
       // 1. Update application status
-      await axiosSecure.patch(`/applications/${appId}`, { status: newStatus });
+      await axiosSecure.patch(`/applicationStatus/${appId}`, { status: newStatus });
 
       // 2. If approved, increase purchase count
       if (newStatus === "Approved") {
