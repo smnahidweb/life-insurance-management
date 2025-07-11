@@ -33,6 +33,8 @@ const Register = () => {
       const userInfo ={
 
       email: data.email,
+      name:user.displayName,
+      photo:user.photoURL,
       role:'customer' ,
       created_at : new Date().toISOString(),
       last_log_at: new Date().toISOString()
