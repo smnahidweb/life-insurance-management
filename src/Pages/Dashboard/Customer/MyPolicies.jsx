@@ -109,7 +109,7 @@ const MyPolicies = () => {
                 </td>
                 <td>{app.quoteInfo.coverage}</td>
                 <td>{app.quoteInfo.duration} yrs</td>
-                <td>${app.quoteInfo.annual}</td>
+                <td>${app.quoteInfo.monthly}</td>
                 <td>
                   {app.reviewSubmitted ? (
                     <button className="btn btn-sm btn-success cursor-default" disabled>

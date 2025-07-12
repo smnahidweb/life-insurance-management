@@ -30,6 +30,7 @@ import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
 import ManageBlogs from "../Pages/Dashboard/Admin/ManageBlogs";
 import AgentClaimReview from "../Pages/Dashboard/Agent/AgentClaimReview";
+import ManageTransactions from "../Pages/Dashboard/Admin/ManageTransactions";
 
 
  export const router = createBrowserRouter([
@@ -193,6 +194,12 @@ import AgentClaimReview from "../Pages/Dashboard/Agent/AgentClaimReview";
           <ManageBlogs></ManageBlogs>
         </AdminRoute>
 
+      },
+      {
+        path:'manage-transactions',
+        element:<AdminRoute>
+          <ManageTransactions></ManageTransactions>
+        </AdminRoute>
       }
     ]
 

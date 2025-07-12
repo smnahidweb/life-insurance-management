@@ -77,9 +77,11 @@ const PaymentForm = () => {
       const paymentInfo = {
         appId,
         policyId: appData.policyId,
+        policyTitle: appData.policyTitle, 
         email: user.email,
         transactionId,
         amount,
+        PaymentStatus:'paid',
         paymentMethod: result.paymentIntent.payment_method_types,
         date: new Date(),
       };
