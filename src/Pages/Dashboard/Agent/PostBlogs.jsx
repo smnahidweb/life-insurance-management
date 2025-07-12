@@ -1,16 +1,31 @@
-// Full frontend React code with Edit + Delete for blogs
-
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../../../Context/AuthProvider";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import { useForm } from "react-hook-form";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { HiPlus, HiTrash } from "react-icons/hi";
 import Swal from "sweetalert2";
+
+
+
+const uploadImageToImgbb = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Key}`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  return data?.data?.url;
+};
 
 const PostBlogs = () => {
   const { user } = useContext(AuthContext);
   const axiosSecure = UseAxiosSecure();
-  const [blogs, setBlogs] = useState([]);
+  const queryClient = useQueryClient();
+
   const [showModal, setShowModal] = useState(false);
   const [editBlog, setEditBlog] = useState(null);
 
@@ -18,39 +33,96 @@ const PostBlogs = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  // Fetch blogs
-  useEffect(() => {
-    const fetchBlogs = async () => {
+  // === Query: Fetch blogs ===
+  const { data: blogs = [], isLoading } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: async () => {
       const res = await axiosSecure.get("/blogs");
-      setBlogs(res.data);
-    };
-    fetchBlogs();
-  }, [axiosSecure]);
+      return res.data;
+    },
+  });
+
+  // === Mutation: Add new blog ===
+  const createBlogMutation = useMutation({
+    mutationFn: async (blogData) => {
+      const res = await axiosSecure.post("/blogs", blogData);
+      return res.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(["blogs"]);
+      Swal.fire("Success!", "Blog published successfully!", "success");
+      setShowModal(false);
+      reset();
+    },
+    onError: () => {
+      Swal.fire("Error", "Failed to publish blog", "error");
+    },
+  });
+
+  // === Mutation: Update blog ===
+  const updateBlogMutation = useMutation({
+    mutationFn: async ({ id, updateData }) => {
+      const res = await axiosSecure.patch(`/blogs/${id}`, updateData);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+      Swal.fire("Updated!", "Blog updated successfully.", "success");
+      setEditBlog(null);
+      reset();
+    },
+    onError: () => {
+      Swal.fire("Error", "Failed to update blog", "error");
+    },
+  });
+
+  // === Mutation: Delete blog ===
+  const deleteBlogMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await axiosSecure.delete(`/blogs/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blogs"]);
+      Swal.fire("Deleted!", "Blog has been deleted.", "success");
+    },
+    onError: () => {
+      Swal.fire("Error", "Failed to delete blog", "error");
+    },
+  });
 
   const onSubmit = async (data) => {
-    const blogData = {
+    try {
+      const imageFile = data.image[0];
+      const imageUrl = await uploadImageToImgbb(imageFile);
+
+      const blogData = {
+        title: data.title,
+        content: data.content,
+        author: user?.displayName || "Unknown",
+        authorEmail: user?.email,
+        image: imageUrl,
+        publishDate: new Date(),
+      };
+
+      createBlogMutation.mutate(blogData);
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      Swal.fire("Error", "Image upload failed", "error");
+    }
+  };
+
+  const handleUpdate = (data) => {
+    const updated = {
       title: data.title,
       content: data.content,
-      author: user?.displayName || "Unknown",
-      authorEmail: user?.email,
-      publishDate: new Date(),
+      image: data.image, // You can support re-upload here if needed
     };
-
-    try {
-      const res = await axiosSecure.post("/blogs", blogData);
-      if (res.data.insertedId) {
-        Swal.fire("Success!", "Blog published successfully!", "success");
-        setBlogs((prev) => [...prev, { ...blogData, _id: res.data.insertedId }]);
-        reset();
-        setShowModal(false);
-      }
-    } catch (err) {
-      console.error("Error publishing blog:", err);
-      Swal.fire("Error", "Something went wrong!", "error");
-    }
+    updateBlogMutation.mutate({ id: editBlog._id, updateData: updated });
   };
 
   const handleDelete = async (id) => {
@@ -64,35 +136,7 @@ const PostBlogs = () => {
     });
 
     if (confirm.isConfirmed) {
-      try {
-        const res = await axiosSecure.delete(`/blogs/${id}`);
-        if (res.data.deletedCount > 0) {
-          setBlogs(blogs.filter((blog) => blog._id !== id));
-          Swal.fire("Deleted!", "The blog has been deleted.", "success");
-        }
-      } catch (err) {
-        console.error("Delete failed", err);
-        Swal.fire("Error", "Failed to delete blog", "error");
-      }
-    }
-  };
-
-  const handleUpdate = async (data) => {
-    try {
-      const res = await axiosSecure.patch(`/blogs/${editBlog._id}`, {
-        title: data.title,
-        content: data.content,
-      });
-      if (res.data.modifiedCount > 0) {
-        Swal.fire("Updated!", "Blog updated successfully.", "success");
-        setBlogs((prev) =>
-          prev.map((b) => (b._id === editBlog._id ? { ...b, ...data } : b))
-        );
-        setEditBlog(null);
-      }
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Failed to update blog", "error");
+      deleteBlogMutation.mutate(id);
     }
   };
 
@@ -100,7 +144,14 @@ const PostBlogs = () => {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-[var(--color-primary)]">Manage Blogs</h2>
-        <button onClick={() => setShowModal(true)} className="btn bg-[var(--color-primary)] text-white">
+        <button
+          onClick={() => {
+            setEditBlog(null);
+            reset();
+            setShowModal(true);
+          }}
+          className="btn bg-[var(--color-primary)] text-white"
+        >
           <HiPlus className="text-xl" /> Add New Blog
         </button>
       </div>
@@ -121,12 +172,14 @@ const PostBlogs = () => {
               <tr key={blog._id} className="hover">
                 <td>{blog.title}</td>
                 <td>{blog.author}</td>
-               <td>{blog.content.length > 20 ? blog.content.slice(0, 20) + "..." : blog.content}</td>
-
+                <td>{blog.content.slice(0, 20)}...</td>
                 <td>{new Date(blog.publishDate).toLocaleDateString()}</td>
                 <td className="text-right flex gap-2 justify-end">
                   <button
-                    onClick={() => setEditBlog(blog)}
+                    onClick={() => {
+                      setEditBlog(blog);
+                      reset(blog);
+                    }}
                     className="btn btn-sm bg-yellow-400 hover:bg-yellow-500 text-white"
                   >
                     Edit
@@ -149,18 +202,30 @@ const PostBlogs = () => {
         <Modal title="New Blog Post" onClose={() => setShowModal(false)}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <InputField label="Title" name="title" register={register} error={errors.title} required />
-           <div>
-  <label className="block text-sm font-medium mb-1">Author</label>
-  <input
-    type="text"
-    value={user?.displayName || "Unknown"}
-    readOnly
-    className="input input-bordered w-full bg-gray-100"
-  />
-</div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Author</label>
+              <input
+                type="text"
+                value={user?.displayName || "Unknown"}
+                readOnly
+                className="input input-bordered w-full bg-gray-100"
+              />
+            </div>
             <TextAreaField label="Content" name="content" register={register} error={errors.content} required />
+            <div>
+              <label className="block text-sm font-medium mb-1">Upload Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("image", { required: "Image is required" })}
+                className="file-input file-input-bordered w-full"
+              />
+              {errors.image && <p className="text-red-600 text-sm mt-1">{errors.image.message}</p>}
+            </div>
             <div className="text-right">
-              <button type="submit" className="btn bg-[var(--color-primary)] text-white">Publish</button>
+              <button type="submit" className="btn bg-[var(--color-primary)] text-white">
+                Publish
+              </button>
             </div>
           </form>
         </Modal>
@@ -169,10 +234,7 @@ const PostBlogs = () => {
       {/* Edit Modal */}
       {editBlog && (
         <Modal title="Edit Blog" onClose={() => setEditBlog(null)}>
-          <form
-            onSubmit={handleSubmit(handleUpdate)}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSubmit(handleUpdate)} className="space-y-4">
             <InputField
               label="Title"
               name="title"
@@ -180,15 +242,15 @@ const PostBlogs = () => {
               defaultValue={editBlog.title}
               required
             />
-               <div>
-  <label className="block text-sm font-medium mb-1">Author</label>
-  <input
-    type="text"
-    value={editBlog.author || "Unknown"}
-    readOnly
-    className="input input-bordered w-full bg-gray-100"
-  />
-</div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Author</label>
+              <input
+                type="text"
+                value={editBlog.author || "Unknown"}
+                readOnly
+                className="input input-bordered w-full bg-gray-100"
+              />
+            </div>
             <TextAreaField
               label="Content"
               name="content"
@@ -196,8 +258,17 @@ const PostBlogs = () => {
               defaultValue={editBlog.content}
               required
             />
+            <InputField
+              label="Image URL"
+              name="image"
+              register={register}
+              defaultValue={editBlog.image || ""}
+              required
+            />
             <div className="text-right">
-              <button type="submit" className="btn bg-[var(--color-primary)] text-white">Update</button>
+              <button type="submit" className="btn bg-[var(--color-primary)] text-white">
+                Update
+              </button>
             </div>
           </form>
         </Modal>
@@ -206,12 +277,15 @@ const PostBlogs = () => {
   );
 };
 
+// Shared components
 const Modal = ({ title, children, onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
     <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
       <h3 className="text-xl font-semibold text-[var(--color-primary)] mb-4">{title}</h3>
       {children}
-      <button onClick={onClose} className="absolute top-2 right-2 text-xl">✕</button>
+      <button onClick={onClose} className="absolute top-2 right-2 text-xl">
+        ✕
+      </button>
     </div>
   </div>
 );

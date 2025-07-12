@@ -148,7 +148,7 @@ const DashboardLayout = () => {
     </li>
 
     <li>
-      <Link to="/dashboard/payments" className="flex items-center gap-2">
+      <Link to="/dashboard/payment" className="flex items-center gap-2">
         <FaFileContract className="text-primary" />
         <span className="font-medium">Payment Page</span>
       </Link>

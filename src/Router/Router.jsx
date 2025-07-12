@@ -135,7 +135,7 @@ import AgentClaimReview from "../Pages/Dashboard/Agent/AgentClaimReview";
         Component:Paymentstatus
       },
       {
-        path:'payments',
+        path:'payment/:id',
         Component:PaymentPage
       },
       {

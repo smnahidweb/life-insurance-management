@@ -1,10 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../../Context/AuthProvider";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
 
 const AssignedCustomers = () => {
   const { user } = useContext(AuthContext);
@@ -13,22 +12,32 @@ const AssignedCustomers = () => {
 
   const [selectedApp, setSelectedApp] = useState(null);
 
+  // Fetch assigned applications
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["assignedApplications", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/applications`);
-      return res.data.filter(app => app.assignedAgent === user.email);
+      const res = await axiosSecure.get("/applications");
+      return res.data.filter((app) => app.assignedAgent === user.email);
     },
   });
 
+  // Update application status (and paymentStatus if Approved)
   const updateStatus = useMutation({
     mutationFn: async ({ appId, newStatus, policyId }) => {
-      // 1. Update application status
-      await axiosSecure.patch(`/applicationStatus/${appId}`, { status: newStatus });
+      // Step 1: Update status
+      await axiosSecure.patch(`/applicationStatus/${appId}`, {
+        status: newStatus,
+      });
 
-      // 2. If approved, increase purchase count
+      // Step 2: If status is Approved
       if (newStatus === "Approved") {
+        // Set paymentStatus to "due"
+        await axiosSecure.patch(`/applicationPaymentStatus/${appId}`, {
+          paymentStatus: "due",
+        });
+
+        // Step 3: Increase policy purchase count
         await axiosSecure.patch(`/policies/purchase/${policyId}`);
       }
     },
@@ -101,7 +110,7 @@ const AssignedCustomers = () => {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Applicant Detail Modal */}
       <Transition appear show={!!selectedApp} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setSelectedApp(null)}>
           <Transition.Child
