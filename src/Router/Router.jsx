@@ -31,6 +31,8 @@ import ToBeAgentForm from "../Pages/ToBeAgent/ToBeagent";
 import ManageBlogs from "../Pages/Dashboard/Admin/ManageBlogs";
 import AgentClaimReview from "../Pages/Dashboard/Agent/AgentClaimReview";
 import ManageTransactions from "../Pages/Dashboard/Admin/ManageTransactions";
+import DetailsBlogs from "../Pages/Home/DetailsBlogs";
+import AllBlogs from "../Pages/AllBlogs/AllBlogs";
 
 
  export const router = createBrowserRouter([
@@ -48,8 +50,8 @@ import ManageTransactions from "../Pages/Dashboard/Admin/ManageTransactions";
         Component:AllPolicies
     },
     {
-        path:'/agents',
-        Component:Agents
+        path:'/blogs',
+        Component:AllBlogs
 
     },
     {
@@ -60,7 +62,16 @@ import ManageTransactions from "../Pages/Dashboard/Admin/ManageTransactions";
         path:'/forbidden',
         Component:Forbidden
     },
-    
+    {
+     path:'blogs/:id',
+     Component:DetailsBlogs
+    },
+    {
+
+      path:'blogs',
+      Component:AllBlogs
+
+    },
       {
           path:"/policies/:id",
           element:
@@ -103,6 +114,7 @@ import ManageTransactions from "../Pages/Dashboard/Admin/ManageTransactions";
             path:'/register',
             Component:Register
         },
+        
         
 
     ]

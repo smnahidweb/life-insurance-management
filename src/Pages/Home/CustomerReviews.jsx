@@ -27,11 +27,15 @@ const CustomerReviews = () => {
   });
 
   return (
-    <div className="py-16 bg-gray-100">
+    <div className="py-16 ">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-12 text-[var(--color-primary)]">
-          What Our Customers Say
-        </h2>
+       <h2 className="text-4xl font-bold text-center mb-2 text-[var(--color-primary)]">
+  What Our Customers Say
+</h2>
+<p className="text-center text-gray-600 mb-10 max-w-xl mx-auto">
+  Hear directly from our valued customers — real reviews and honest feedback about their experiences.
+</p>
+
 
         {isLoading ? (
           <p className="text-center text-gray-500">Loading reviews...</p>
@@ -54,7 +58,7 @@ const CustomerReviews = () => {
 
               return (
                 <SwiperSlide key={review._id}>
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 flex flex-col h-[420px]">
+                  <div className=" rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 flex flex-col h-[420px]">
                     {/* Image */}
                     <div className="relative h-60 w-full">
                       <img
