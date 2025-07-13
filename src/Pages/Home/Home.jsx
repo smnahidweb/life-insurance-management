@@ -4,6 +4,7 @@ import PopularPolicies from './PopularPolicies/PopularPolicies';
 import BenefitsSection from './BenefitsSection';
 import CustomerReviews from './CustomerReviews';
 import LatestBlogs from './LatestBlogs';
+import Subscribtion from './Subscribtion';
 
 const Home = () => {
     return (
@@ -13,6 +14,7 @@ const Home = () => {
          <BenefitsSection></BenefitsSection>
          <CustomerReviews></CustomerReviews>
          <LatestBlogs></LatestBlogs>
+         <Subscribtion></Subscribtion>
         </div>
     );
 };
