@@ -35,6 +35,8 @@ const MyPolicies = () => {
       rating: parseInt(form.rating.value),
       comment: form.comment.value,
       userEmail: user.email,
+      userName:user?.displayName,
+      photo:user?.photoURL,
       policyId: selectedApplication.policyId,
       policyTitle: selectedApplication.policyTitle,
       submittedAt: new Date(),
