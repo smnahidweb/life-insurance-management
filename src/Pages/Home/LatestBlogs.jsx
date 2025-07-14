@@ -22,7 +22,7 @@ const LatestBlogs = () => {
         <h2 className="text-4xl font-bold text-center text-[var(--color-primary)] mb-2">
           Latest Blog & Articles
         </h2>
-        <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+        <p className=" text-gray-600 mb-10 text-center mt-2">
           Stay updated with expert insights and helpful tips on insurance, finance, and more.
         </p>
 

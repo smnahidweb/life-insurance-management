@@ -52,7 +52,7 @@ const DashboardLayout = () => {
 
           <li>
             <Link to="/dashboard">
-              <FaHome className="mr-2 text-primary" /> Dashboard Home
+              <FaUser className="text-primary" />My Profile
             </Link>
           </li>
 
@@ -126,19 +126,19 @@ const DashboardLayout = () => {
       </Link>
     </li>
 
-    <li>
+    {/* <li>
       <Link to="/dashboard/profile" className="flex items-center gap-2">
         <FaUser className="text-primary" />
         <span className="font-medium"> My Profile</span>
       </Link>
-    </li>
+    </li> */}
 
-    <li>
+    {/* <li>
       <Link to="/dashboard/my-reviews" className="flex items-center gap-2">
         <FaPaperPlane className="text-primary" />
         <span className="font-medium">Submit Reviews</span>
       </Link>
-    </li>
+    </li> */}
 
     <li>
       <Link to="/dashboard/payment-status" className="flex items-center gap-2">
@@ -147,12 +147,12 @@ const DashboardLayout = () => {
       </Link>
     </li>
 
-    <li>
+    {/* <li>
       <Link to="/dashboard/payment" className="flex items-center gap-2">
         <FaFileContract className="text-primary" />
         <span className="font-medium">Payment Page</span>
       </Link>
-    </li>
+    </li> */}
 
     <li>
       <Link to="/dashboard/claim-request" className="flex items-center gap-2">

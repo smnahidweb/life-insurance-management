@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import { FaPlus, FaEdit, FaTrash, FaFileAlt } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const ManagePolicies = () => {
   const axiosSecure = UseAxiosSecure();
@@ -21,7 +22,7 @@ const ManagePolicies = () => {
   const { data: policies = [], isLoading, isError } = useQuery({
     queryKey: ["policies"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/policies");
+      const res = await axiosSecure.get("/policy");
       return res.data;
     },
   });
@@ -34,12 +35,23 @@ const ManagePolicies = () => {
         return await axiosSecure.post("/policies", policy);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["policies"]);
-      reset();
-      setModalOpen(false);
-      setEditData(null);
-    },
+    onSuccess: (res) => {
+  queryClient.invalidateQueries(["policies"]);
+  reset();
+  setModalOpen(false);
+  setEditData(null);
+
+  Swal.fire({
+    icon: "success",
+    title: editData ? "Policy Updated" : "Policy Added",
+    text: editData
+      ? "The policy has been successfully updated."
+      : "New policy has been successfully added.",
+    confirmButtonColor: "#3085d6",
+    confirmButtonText: "OK"
+  });
+},
+
   });
 
   const deletePolicy = useMutation({
@@ -190,6 +202,7 @@ const ManagePolicies = () => {
                 <option value="Senior">Senior</option>
                 <option value="Whole Life">Whole Life</option>
                 <option value="Universal Life">Universal Life</option>
+                <option value="Family Plan">Family Plan</option>
               </select>
               <textarea
                 defaultValue={editData?.description}

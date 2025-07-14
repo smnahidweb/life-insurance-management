@@ -29,7 +29,6 @@ const ManageTransactions = () => {
 
   const totalIncome = payments.reduce((sum, p) => sum + p.amount, 0);
 
-  // 📊 Grouped by date for chart
   const chartData = payments.reduce((acc, payment) => {
     const date = format(new Date(payment.date), "MM/dd");
     const found = acc.find((d) => d.date === date);
@@ -39,33 +38,29 @@ const ManageTransactions = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-8">
-      {/* Header with title and total income */}
-      <div className="flex justify-between items-center">
-        <h2 className="flex items-center text-3xl font-bold text-[var(--color-primary)] space-x-2">
-  <FaCreditCard className="text-[var(--color-primary)]" />
-  <span>Manage Transactions</span>
-</h2>
-
-        {/* Total Income box with icon */}
-        <div className="flex items-center bg-blue-500 text-white rounded-lg px-4 py-2 shadow-md select-none">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="flex items-center text-2xl md:text-3xl font-bold text-[var(--color-primary)] gap-2">
+          <FaCreditCard className="text-[var(--color-primary)]" />
+          <span>Manage Transactions</span>
+        </h2>
+        <div className="flex items-center bg-blue-500 text-white rounded-lg px-4 py-2 shadow-md">
           <FaDollarSign className="mr-2 text-xl" />
           <div>
             <p className="text-sm font-semibold">Total Income</p>
-            <p className="text-xl font-bold">${totalIncome.toFixed(2)}</p>
+            <p className="text-lg md:text-xl font-bold">${totalIncome.toFixed(2)}</p>
           </div>
         </div>
       </div>
 
-      {/* 🔍 Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      {/* Filters */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="flex flex-col">
-          <label className="label font-medium text-sm text-gray-600">
-            Customer Email
-          </label>
+          <label className="label font-medium text-sm text-gray-600">Customer Email</label>
           <input
             type="text"
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            className="input input-bordered w-full focus:outline-none"
             placeholder="example@email.com"
             onChange={(e) =>
               setFilters({ ...filters, email: e.target.value.trim() })
@@ -73,12 +68,10 @@ const ManageTransactions = () => {
           />
         </div>
         <div className="flex flex-col">
-          <label className="label font-medium text-sm text-gray-600">
-            Policy Name
-          </label>
+          <label className="label font-medium text-sm text-gray-600">Policy Name</label>
           <input
             type="text"
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            className="input input-bordered w-full focus:outline-none"
             placeholder="Policy title"
             onChange={(e) =>
               setFilters({ ...filters, policy: e.target.value.trim() })
@@ -89,7 +82,7 @@ const ManageTransactions = () => {
           <label className="label font-medium text-sm text-gray-600">From Date</label>
           <input
             type="date"
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            className="input input-bordered w-full focus:outline-none"
             onChange={(e) => setFilters({ ...filters, from: e.target.value })}
           />
         </div>
@@ -97,7 +90,7 @@ const ManageTransactions = () => {
           <label className="label font-medium text-sm text-gray-600">To Date</label>
           <input
             type="date"
-            className="input input-bordered w-full focus:outline-none focus:ring-0 focus:border-[var(--color-primary)]"
+            className="input input-bordered w-full focus:outline-none"
             onChange={(e) => setFilters({ ...filters, to: e.target.value })}
           />
         </div>
@@ -111,15 +104,16 @@ const ManageTransactions = () => {
         </div>
       </div>
 
+      {/* Table and Chart */}
       {isLoading ? (
         <Loading />
       ) : payments.length === 0 ? (
         <p className="text-center text-gray-500 mt-10">No transactions found.</p>
       ) : (
         <>
-          {/* 📋 Transaction Table */}
-          <div className="overflow-x-auto rounded-xl shadow border border-gray-200 bg-white">
-            <table className="table table-zebra w-full">
+          {/* Transaction Table */}
+          <div className="overflow-auto rounded-xl shadow border border-gray-200 bg-white">
+            <table className="table w-full min-w-[700px]">
               <thead className="bg-[var(--color-primary)] text-white">
                 <tr>
                   <th>Transaction ID</th>
@@ -142,7 +136,7 @@ const ManageTransactions = () => {
                       <span
                         className={`badge px-3 py-1 rounded-full ${
                           p.PaymentStatus === "paid"
-                            ? "bg-green-400 text-green-600"
+                            ? "bg-green-100 text-green-600"
                             : "bg-red-100 text-red-600"
                         }`}
                       >
@@ -155,10 +149,10 @@ const ManageTransactions = () => {
             </table>
           </div>
 
-          {/* 📊 Bar Chart */}
+          {/* Chart */}
           <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
             <h4 className="text-xl font-semibold mb-4 text-[var(--color-primary)]">
-              Total Income: ${totalIncome.toFixed(2)}
+              Total Income Chart
             </h4>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>

@@ -1,120 +1,75 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router"; // react-router-dom here
+import { Link, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { useState, useContext } from "react";
 import axios from "axios";
 import UseAxios from "../../Hooks/UseAxios";
 import { AuthContext } from "../../Context/AuthProvider";
-// import { AuthContext } from "../../Context/AuthProvider";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const { createUser, UpdatedInfo } = useContext(AuthContext); // Ensure your AuthContext exports createUser
-  const [photo, setPhoto] = useState('');
-//   const axiosPublic = UseAxios();
+  const { createUser, UpdatedInfo } = useContext(AuthContext);
+  const axiosPublic = UseAxios();
   const navigate = useNavigate();
+  const [imageFile, setImageFile] = useState(null);
 
-
- const onSubmit = (data) => {
-    console.log("Register Form Data:", data);
-    const {email,password}=  data;
-    console.log(email,password)
-    
-
-
-  
-
-    createUser(email,password)
-    .then(async (userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-
-
-      const userInfo ={
-
-      email: data.email,
-      name:user.displayName,
-      photo:user.photoURL,
-      role:'customer' ,
-      created_at : new Date().toISOString(),
-      last_log_at: new Date().toISOString()
-
-
-    }
-     await axios.post('http://localhost:5000/users',userInfo)
-   .then(res =>{
-    console.log(res.data)
-   })
-   .catch(error =>{
-    console.log(error)
-   })
-
-
-
-    const profileInfo ={
-      displayName: data.name,
-      photoURL:photo
-    }
-   UpdatedInfo(profileInfo)
-    .then( () =>{
-      console.log('success uploaded')
-
-    })
-    .catch(error =>{
-      console.log(error)
-    })
-      Swal.fire({
-      title: "Account Created  Successfully!",
-      icon: "success",
-      draggable: true
-    });
-    navigate('/')
-    console.log(user)
-    // ...
-  })
-  .catch((error) => {
-   console.log(error)
-    // ..
-  });
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
-  const handleUploadPhoto = async (e) => {
-  const image = e.target.files[0];
-  console.log(image)
-  
-  const formData = new FormData();
-  formData.append('image', image);
 
-  const imageUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Key}`;
+  const onSubmit = async (data) => {
+    const { email, password, name } = data;
 
-  try {
-    const res = await axios.post(imageUrl, formData);
-    setPhoto(res.data.data.url);
-  } catch (err) {
-    console.error("Image upload error:", err);
-  }
-};
+    try {
+      // Step 1: Upload Image to ImgBB
+      let uploadedPhotoURL = "";
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("image", imageFile);
+        const imageUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Key}`;
+        const res = await axios.post(imageUrl, formData);
+        uploadedPhotoURL = res.data.data.url;
+      }
 
+      // Step 2: Create User in Firebase
+      const userCredential = await createUser(email, password);
+      const user = userCredential.user;
 
+      // Step 3: Update Firebase Profile
+      await UpdatedInfo({
+        displayName: name,
+        photoURL: uploadedPhotoURL,
+      });
 
+      // Step 4: Save user info to DB
+      const userInfo = {
+        email,
+        name,
+        photo: uploadedPhotoURL,
+        role: "customer",
+        created_at: new Date().toISOString(),
+        last_log_at: new Date().toISOString(),
+      };
 
+      await axiosPublic.post("/users", userInfo);
 
+      // Step 5: Success alert and redirect
+      Swal.fire({
+        title: "Account Created Successfully!",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      navigate("/");
+    } catch (error) {
+      console.error("Registration Error:", error);
+      Swal.fire({
+        title: "Registration Failed",
+        text: error.message,
+        icon: "error",
+      });
+    }
+  };
 
   return (
     <div className="w-full max-w-md space-y-6 mx-auto p-6">
@@ -170,7 +125,7 @@ const Register = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={handleUploadPhoto}
+            onChange={handleImageChange}
             className="file-input file-input-bordered w-full"
           />
         </div>
