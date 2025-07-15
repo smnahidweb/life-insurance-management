@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router"; // fixed import
+import React, { useState } from "react";
+import { Link } from "react-router";
 import UseAxios from "../../Hooks/UseAxios";
 import { useQuery } from "@tanstack/react-query";
-import { FaTags } from "react-icons/fa"; // Single icon for all categories
+import { FaTags } from "react-icons/fa";
+import Loading from "../../Components/Loading";
 
 const AllPolicies = () => {
   const axiosPublic = UseAxios();
   const [currentPage, setCurrentPage] = useState(1);
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState([]);
 
   const policiesPerPage = 9;
 
-  // Fetch available categories from backend
-  useEffect(() => {
-    axiosPublic.get("/policy-categories").then((res) => {
-      if (Array.isArray(res.data)) {
-        setCategories(res.data);
-      }
-    });
-  }, [axiosPublic]);
-
- 
   const { data: policyData = {}, isLoading } = useQuery({
     queryKey: ["policies", currentPage, category],
     queryFn: async () => {
@@ -36,7 +26,7 @@ const AllPolicies = () => {
 
   const handleFilterChange = (e) => {
     setCategory(e.target.value);
-    setCurrentPage(1); // reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   return (
@@ -53,17 +43,18 @@ const AllPolicies = () => {
           className="select select-bordered"
         >
           <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
+          <option value="Term Life">Term Life</option>
+          <option value="Senior">Senior</option>
+          <option value="Whole Life">Whole Life</option>
+          <option value="Universal Life">Universal Life</option>
+          <option value="Family Plan">Family Plan</option>
+          <option value="Child Plan">Child Plan</option>
         </select>
       </div>
 
       {/* Policy Cards */}
       {isLoading ? (
-        <p className="text-center text-gray-500">Loading policies...</p>
+         <Loading></Loading>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {policyData.policies?.map((policy) => (

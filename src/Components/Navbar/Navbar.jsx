@@ -1,8 +1,16 @@
-import { Link, NavLink } from "react-router"; 
+import { Link, NavLink } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../Context/AuthProvider";
 import Swal from "sweetalert2";
 import logo from "/logo.png";
+import {
+  FaBlog,
+  FaFileAlt,
+  FaHome,
+  FaTachometerAlt,
+  FaSignInAlt,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 const Navbar = () => {
   const { user, LogOut } = useContext(AuthContext);
@@ -20,27 +28,43 @@ const Navbar = () => {
 
   const navLinks = (
     <>
-      <li><NavLink to="/" className="font-semibold">Home</NavLink></li>
-      <li><NavLink to="/policies" className="font-semibold">All Policies</NavLink></li>
-      <li><NavLink to="/blogs" className="font-semibold">Blogs</NavLink></li>
-   
-      <li><NavLink to="/to-be-agent" className="font-semibold">To be Agent</NavLink></li>
-      {user && <li><NavLink to="/dashboard" className="font-semibold">Dashboard</NavLink></li>}
+      <li className="text-white">
+        <NavLink to="/" className="font-semibold flex items-center gap-2">
+          <FaHome /> Home
+        </NavLink>
+      </li>
+      <li className="text-white">
+        <NavLink to="/policies" className="font-semibold flex items-center gap-2">
+          <FaFileAlt /> All Policies
+        </NavLink>
+      </li>
+      <li className="text-white">
+        <NavLink to="/blogs" className="font-semibold flex items-center gap-2">
+          <FaBlog /> Blogs
+        </NavLink>
+      </li>
+      {user && (
+        <li className="text-white">
+          <NavLink to="/dashboard" className="font-semibold flex items-center gap-2">
+            <FaTachometerAlt /> Dashboard
+          </NavLink>
+        </li>
+      )}
     </>
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 z-50 w-full px-4 lg:px-8">
+    <div className="navbar bg-[#1E40AF] shadow-sm fixed top-0 z-50 w-full px-4 lg:px-8">
       {/* Logo Start */}
       <div className="navbar-start">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="logo" className="w-10 h-10" />
-          <span className="text-xl font-bold text-primary">LifeSure</span>
+          <span className="text-xl font-bold text-white">Sure Life</span>
         </Link>
       </div>
 
-      {/* Mobile Dropdown: Right aligned */}
-      <div className="navbar-end lg:hidden">
+      {/* Mobile Dropdown */}
+      <div className="navbar-end bg-[#1E40AF] lg:hidden">
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle">
             <svg
@@ -56,18 +80,20 @@ const Navbar = () => {
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1000] p-2 shadow bg-base-100 rounded-box w-52"
+            className="menu menu-sm dropdown-content mt-3 z-[1000] p-2 shadow bg-[#1E40AF] rounded-box w-52"
           >
             {navLinks}
             {user ? (
               <li>
-                <button onClick={handleLogout} className="font-semibold w-full text-left">
-                  Logout
+                <button onClick={handleLogout} className="font-semibold text-white flex items-center gap-2">
+                  <FaSignOutAlt /> Logout
                 </button>
               </li>
             ) : (
               <li>
-                <NavLink to="/login" className="font-semibold">Login</NavLink>
+                <NavLink to="/login" className="font-semibold text-white flex items-center gap-2">
+                  <FaSignInAlt /> Login
+                </NavLink>
               </li>
             )}
           </ul>
@@ -84,9 +110,19 @@ const Navbar = () => {
       {/* Desktop End Buttons */}
       <div className="navbar-end hidden lg:flex">
         {user ? (
-          <button onClick={handleLogout} className="btn btn-outline btn-error">Logout</button>
+          <button
+            onClick={handleLogout}
+            className="btn bg-white text-red-600 hover:bg-red-100 flex items-center gap-2"
+          >
+            <FaSignOutAlt /> Logout
+          </button>
         ) : (
-          <NavLink to="/login" className="btn btn-outline btn-primary">Login</NavLink>
+          <NavLink
+            to="/login"
+            className="btn bg-white text-blue-600 hover:bg-blue-100 flex items-center gap-2"
+          >
+            <FaSignInAlt /> Login
+          </NavLink>
         )}
       </div>
     </div>

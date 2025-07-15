@@ -6,9 +6,9 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import slide1 from '/logo1.jpg';
-import slide2 from '/logo2.png';
-import slide3 from '/logo4.jpg';
+import slide1 from '/7.jpg';
+import slide2 from '/8.jpg';
+import slide3 from '/9.jpg';
 
 const slides = [
   {
@@ -26,7 +26,7 @@ const slides = [
   {
     id: 3,
     image: slide3,
-    heading: 'LifeSure – Your Digital Life Partner',
+    heading: 'Sure Life – Your Digital Life Partner',
     tagline: 'Get fast quotes, manage claims, and secure your future with ease.',
   },
 ];
@@ -47,17 +47,17 @@ const Hero = () => {
               
               {/* Left: Text Content */}
               <div className="w-full md:w-1/2 text-center md:text-left space-y-5">
-                <h1 className="text-3xl md:text-5xl font-bold text-primary drop-shadow">
+                <h1 className="text-3xl md:text-5xl font-bold text-[#1E40AF] drop-shadow">
                   {slide.heading}
                 </h1>
                 <p className="text-gray-600 text-base md:text-lg leading-relaxed">
                   {slide.tagline}
                 </p>
                 <Link
-                  to="/quote"
-                  className="btn btn-primary text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
+                  to="/policies"
+                  className="btn bg-[#1E40AF] text-white px-6 py-3 rounded-full shadow-md hover:scale-105 transition-transform duration-300"
                 >
-                  Get a Free Quote
+                  Browse All Policy
                 </Link>
               </div>
 
