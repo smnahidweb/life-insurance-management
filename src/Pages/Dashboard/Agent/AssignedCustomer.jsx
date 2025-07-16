@@ -17,8 +17,9 @@ const AssignedCustomers = () => {
     queryKey: ["assignedApplications", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get("/applications");
-      return res.data.filter((app) => app.assignedAgent === user.email);
+      const res = await axiosSecure.get(`/applications?assignedAgent=${user?.email}`);
+      //  return res.data.filter((app) => app.assignedAgent === user.email);
+      return res.data
     },
   });
 

@@ -12,6 +12,7 @@ import {
 } from "firebase/auth";
 
 import app from "../Firebase/firebase.init";
+import axios from "axios";
 
 export const AuthContext = createContext();
 
@@ -57,6 +58,16 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if(currentUser?.email){
+        const userData = {email:currentUser?.email}
+      axios.post('http://localhost:5000/jwt',userData,{
+        withCredentials:true,
+      })
+      .then(res=>{
+        console.log(res.data)
+      })
+      .catch(error=> console.log(error))
+      }
       setLoading(false);
     });
 

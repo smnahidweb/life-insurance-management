@@ -19,7 +19,7 @@ const ManageApplication = () => {
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["allApplications"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/applications");
+      const res = await axiosSecure.get("/applicationsAdmin");
       return res.data;
     },
   });

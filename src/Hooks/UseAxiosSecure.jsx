@@ -10,6 +10,7 @@ const UseAxiosSecure = () => {
   // Create axios instance
   const axiosSecure = axios.create({
     baseURL: 'http://localhost:5000',
+    withCredentials:true
   });
 
   // Add Authorization header to requests if user token exists

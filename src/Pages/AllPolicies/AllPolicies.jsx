@@ -2,21 +2,22 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import UseAxios from "../../Hooks/UseAxios";
 import { useQuery } from "@tanstack/react-query";
-import { FaTags } from "react-icons/fa";
+import { FaFilter, FaSearch, FaTags } from "react-icons/fa";
 import Loading from "../../Components/Loading";
 
 const AllPolicies = () => {
   const axiosPublic = UseAxios();
   const [currentPage, setCurrentPage] = useState(1);
   const [category, setCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const policiesPerPage = 9;
 
   const { data: policyData = {}, isLoading } = useQuery({
-    queryKey: ["policies", currentPage, category],
+    queryKey: ["policies", currentPage, category, searchTerm],
     queryFn: async () => {
       const res = await axiosPublic.get(
-        `/policies?page=${currentPage}&limit=${policiesPerPage}&category=${category}`
+        `/policies?page=${currentPage}&limit=${policiesPerPage}&category=${category}&search=${searchTerm}`
       );
       return res.data;
     },
@@ -31,18 +32,56 @@ const AllPolicies = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
-      <h2 className="text-4xl font-bold text-center text-[var(--color-primary)] mb-6">
-        All Insurance Policies
-      </h2>
+      <div className="flex justify-between items-start mb-4">
+        {/* Left: Search */}
+        <div className=" lg:w-60 md:w-1/2">
+          <label className="flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] mb-1">
+    <FaSearch /> Search Policies
+  </label>
+          <input
+            type="text"
+            placeholder="eg. Life Saver Plan"
+            className="input input-bordered w-full"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
 
-      {/* Filter Dropdown */}
-      <div className="mb-6 text-center">
+        {/* Right: Category Filter */}
+        <div className="hidden md:block">
+          <label className="flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] mb-1">
+    <FaFilter /> Filter
+  </label>
+          <select
+            value={category}
+            onChange={handleFilterChange}
+            className="select select-bordered w-40"
+          >
+            <option value="">All</option>
+            <option value="Term Life">Term Life</option>
+            <option value="Senior">Senior</option>
+            <option value="Whole Life">Whole Life</option>
+            <option value="Universal Life">Universal Life</option>
+            <option value="Family Plan">Family Plan</option>
+            <option value="Child Plan">Child Plan</option>
+          </select>
+        </div>
+      </div>
+
+      {/* For Mobile View: Show Filter below Search */}
+      <div className="block md:hidden mb-6">
+        <label className="block text-sm font-medium text-gray-600 mb-1">
+          Filter by Category
+        </label>
         <select
           value={category}
           onChange={handleFilterChange}
-          className="select select-bordered"
+          className="select select-bordered w-full"
         >
-          <option value="">All Categories</option>
+          <option value="">All</option>
           <option value="Term Life">Term Life</option>
           <option value="Senior">Senior</option>
           <option value="Whole Life">Whole Life</option>
@@ -52,9 +91,13 @@ const AllPolicies = () => {
         </select>
       </div>
 
+      <h2 className="text-4xl font-bold text-center text-[var(--color-primary)] mb-8">
+        All Insurance Policies
+      </h2>
+
       {/* Policy Cards */}
       {isLoading ? (
-         <Loading></Loading>
+        <Loading />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {policyData.policies?.map((policy) => (
@@ -98,7 +141,7 @@ const AllPolicies = () => {
       )}
 
       {/* Pagination */}
-      <div className="flex justify-center mt-8 gap-2">
+      <div className="flex justify-center mt-10 gap-2">
         {[...Array(totalPages).keys()].map((num) => (
           <button
             key={num + 1}

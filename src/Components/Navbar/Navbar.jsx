@@ -11,6 +11,7 @@ import {
   FaSignInAlt,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { MdFamilyRestroom } from 'react-icons/md';
 
 const Navbar = () => {
   const { user, LogOut } = useContext(AuthContext);
@@ -58,7 +59,7 @@ const Navbar = () => {
       {/* Logo Start */}
       <div className="navbar-start">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="logo" className="w-10 h-10" />
+         <MdFamilyRestroom size={50} className="hidden lg:block md:block" color="white" />
           <span className="text-xl font-bold text-white">Sure Life</span>
         </Link>
       </div>
