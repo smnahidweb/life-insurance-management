@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/AuthProvider";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
-import { FaShieldAlt } from "react-icons/fa";
+import { FaShieldAlt, FaFileInvoice } from "react-icons/fa";
 
 const ClaimRequest = () => {
   const { user } = useContext(AuthContext);
@@ -16,13 +16,12 @@ const ClaimRequest = () => {
   useEffect(() => {
     const fetchApprovedApplications = async () => {
       try {
-        const res = await axiosSecure.get("/applications");
-        const filtered = res.data.filter(
-          (app) => app.userEmail === user?.email && app.status === "Approved"
+        const res = await axiosSecure.get(
+          `/my-approved-applications?email=${user?.email}`
         );
-        setApprovedApplications(filtered);
+        setApprovedApplications(res.data);
       } catch (err) {
-        console.error("Failed to fetch applications:", err);
+        console.error("Failed to fetch approved applications:", err);
       }
     };
 
@@ -55,54 +54,73 @@ const ClaimRequest = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow my-10">
       <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-6 flex items-center gap-2">
-  <FaShieldAlt className="text-[var(--color-primary)]" />
-  Your Approved Policies & Claims
-</h2>
+        <FaShieldAlt className="text-[var(--color-primary)]" />
+        Your Approved Policies & Claims
+      </h2>
 
-      <table className="table w-full border rounded-lg">
-        <thead>
-          <tr className="bg-[var(--color-primary)] text-white">
-            <th>Policy Name</th>
-            <th>Claim Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {approvedApplications.map((app) => {
-            const claim = claims.find((c) => c.policyId === app.policyId);
-            const status = claim?.status || "No Claims";
+      {approvedApplications.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow">
+          <FaFileInvoice className="text-7xl text-gray-300 mb-4" />
+          <p className="text-2xl font-semibold text-gray-600 mb-2">
+            No Approved Policies Found
+          </p>
+          <p className="text-gray-400 text-center max-w-sm">
+            You currently have no approved policies. Once a policy is approved,
+            it will appear here for you to file claims.
+          </p>
+        </div>
+      ) : (
+        <table className="table w-full border rounded-lg">
+          <thead>
+            <tr className="bg-[var(--color-primary)] text-white">
+              <th>Policy Name</th>
+              <th>Claim Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {approvedApplications.map((app) => {
+              const claim = claims.find((c) => c.policyId === app.policyId);
+              const status = claim?.status || "No Claims";
 
-            return (
-              <tr key={app._id} className="hover">
-                <td>{app.policyTitle}</td>
-                <td>{status}</td>
-                <td>
-                  {!claim ? (
-                    <button
-                      onClick={() => openClaimForm(app)}
-                      className="btn btn-sm bg-[var(--color-primary)] text-white"
-                    >
-                      File Claim
-                    </button>
-                  ) : status === "Pending" ? (
-                    <button disabled className="btn btn-sm btn-disabled">
-                      Pending Claim
-                    </button>
-                  ) : status === "Approved" ? (
-                    <button disabled className="btn btn-sm bg-green-500 text-black">
-                      Approved
-                    </button>
-                  ) : (
-                    <button disabled className="btn btn-sm btn-disabled">
-                      {status}
-                    </button>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <tr key={app._id} className="hover">
+                  <td>{app.policyTitle}</td>
+                  <td>{status}</td>
+                  <td>
+                    {!claim ? (
+                      <button
+                        onClick={() => openClaimForm(app)}
+                        className="btn btn-sm bg-[var(--color-primary)] text-white"
+                      >
+                        File Claim
+                      </button>
+                    ) : status === "Pending" ? (
+                      <button
+                        disabled
+                        className="btn text-black btn-sm btn-disabled"
+                      >
+                        Pending Claim
+                      </button>
+                    ) : status === "Approved" ? (
+                      <button
+                        disabled
+                        className="btn btn-sm bg-green-500 text-black"
+                      >
+                        Approved
+                      </button>
+                    ) : (
+                      <button disabled className="btn btn-sm btn-disabled">
+                        {status}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
 
       {showForm && selectedApp && (
         <ClaimForm
@@ -117,7 +135,13 @@ const ClaimRequest = () => {
   );
 };
 
-const ClaimForm = ({ application, userEmail, onClose, onSuccess, axiosSecure }) => {
+const ClaimForm = ({
+  application,
+  userEmail,
+  onClose,
+  onSuccess,
+  axiosSecure,
+}) => {
   const [reason, setReason] = useState("");
   const [file, setFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);

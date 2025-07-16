@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
-import { FaClock } from "react-icons/fa";
+import { FaClock, FaInbox } from "react-icons/fa";
 
 const AgentClaimReview = () => {
   const axiosSecure = UseAxiosSecure();
   const [claims, setClaims] = useState([]);
   const [selectedClaim, setSelectedClaim] = useState(null);
 
-  // Fetch all claims with status "Pending"
   useEffect(() => {
     const fetchClaims = async () => {
       try {
@@ -24,7 +22,6 @@ const AgentClaimReview = () => {
     fetchClaims();
   }, [axiosSecure]);
 
-  // Handle Approve
   const handleApprove = async (claimId) => {
     try {
       const res = await axiosSecure.patch(`/claims/status/${claimId}`, {
@@ -43,42 +40,50 @@ const AgentClaimReview = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-     <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-6 flex items-center gap-2">
-  <FaClock className="text-[var(--color-primary)]" />
-  Pending Claim Requests
-</h2>
+      <h2 className="text-3xl font-bold text-[var(--color-primary)] mb-6 flex items-center gap-2">
+        <FaClock className="text-[var(--color-primary)]" />
+        Pending Claim Requests
+      </h2>
 
-      <div className="overflow-x-auto bg-white rounded-xl shadow">
-        <table className="table w-full">
-          <thead>
-            <tr className="bg-[var(--color-primary)] text-white">
-              <th>Policy Name</th>
-              <th>Reason</th>
-              <th>User</th>
-              <th>Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {claims.map(claim => (
-              <tr key={claim._id}>
-                <td>{claim.policyTitle}</td>
-                <td>{claim.reason.slice(0, 30)}...</td>
-                <td>{claim.userEmail}</td>
-                <td>{new Date(claim.submittedAt).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-outline"
-                    onClick={() => setSelectedClaim(claim)}
-                  >
-                    View Details
-                  </button>
-                </td>
+      {claims.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow">
+          <FaInbox className="text-6xl text-gray-400 mb-4" />
+          <p className="text-xl font-semibold text-gray-600">No pending claims found.</p>
+          <p className="text-sm text-gray-400">All customer claims have been reviewed.</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto bg-white rounded-xl shadow">
+          <table className="table w-full">
+            <thead>
+              <tr className="bg-[var(--color-primary)] text-white">
+                <th>Policy Name</th>
+                <th>Reason</th>
+                <th>User</th>
+                <th>Date</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {claims.map(claim => (
+                <tr key={claim._id}>
+                  <td>{claim.policyTitle}</td>
+                  <td>{claim.reason.slice(0, 30)}...</td>
+                  <td>{claim.userEmail}</td>
+                  <td>{new Date(claim.submittedAt).toLocaleDateString()}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-outline"
+                      onClick={() => setSelectedClaim(claim)}
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Modal */}
       <Transition appear show={!!selectedClaim} as={Fragment}>
