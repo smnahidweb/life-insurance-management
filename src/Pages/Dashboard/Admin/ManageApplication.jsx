@@ -13,9 +13,13 @@ import {
 const ManageApplication = () => {
   const axiosSecure = UseAxiosSecure();
   const queryClient = useQueryClient();
-  const [selectedApplication, setSelectedApplication] = useState(null);
 
-  // Fetch applications
+  // State to handle modals and feedback
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showRejectModal, setShowRejectModal] = useState(false); // Step 1: Show/hide rejection modal
+  const [rejectionFeedback, setRejectionFeedback] = useState(""); // Step 2: Store feedback input
+
+  // Step 3: Fetch all applications
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["allApplications"],
     queryFn: async () => {
@@ -24,7 +28,7 @@ const ManageApplication = () => {
     },
   });
 
-  // Fetch agents
+  // Step 4: Fetch all agents
   const { data: agents = [] } = useQuery({
     queryKey: ["agents"],
     queryFn: async () => {
@@ -33,6 +37,7 @@ const ManageApplication = () => {
     },
   });
 
+  // Step 5: Mutation to update approval status
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }) =>
       axiosSecure.patch(`/applications/${id}/status`, { status }),
@@ -42,6 +47,7 @@ const ManageApplication = () => {
     },
   });
 
+  // Step 6: Mutation to assign agent
   const assignAgentMutation = useMutation({
     mutationFn: ({ applicationId, agentEmail }) =>
       axiosSecure.patch(`/applications/${applicationId}`, {
@@ -53,6 +59,18 @@ const ManageApplication = () => {
     },
   });
 
+  // Step 7: Mutation to reject with feedback
+  const rejectApplicationMutation = useMutation({
+    mutationFn: ({ id, feedback }) =>
+      axiosSecure.patch(`/applications/${id}/reject`, { feedback }),
+    onSuccess: () => {
+      Swal.fire("Rejected", "Application has been rejected with feedback.", "success");
+      queryClient.invalidateQueries(["allApplications"]);
+      setRejectionFeedback("");
+      setShowRejectModal(false);
+    },
+  });
+
   if (isLoading) return <p className="text-center py-10">Loading applications...</p>;
 
   return (
@@ -61,6 +79,7 @@ const ManageApplication = () => {
         <FaUserTie className="text-4xl" /> Manage Insurance Applications
       </h2>
 
+      {/* Application Table */}
       <div className="overflow-x-auto bg-white shadow rounded-lg">
         <table className="table w-full text-sm text-gray-700">
           <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
@@ -87,9 +106,7 @@ const ManageApplication = () => {
                   <td>{app.ApplicantName || "N/A"}</td>
                   <td>{app.userEmail}</td>
                   <td>{app.policyTitle}</td>
-                  <td>
-                    {new Date(app.submittedAt || app.createdAt || "").toLocaleDateString()}
-                  </td>
+                  <td>{new Date(app.submittedAt || app.createdAt || "").toLocaleDateString()}</td>
                   <td>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -124,15 +141,19 @@ const ManageApplication = () => {
                     >
                       <FaCheckCircle /> Approve
                     </button>
+
+                    {/* Step 8: Trigger Rejection Modal */}
                     <button
                       className="btn btn-xs bg-red-600 text-white"
-                      onClick={() =>
-                        updateStatusMutation.mutate({ id: app._id, status: "Rejected" })
-                      }
+                      onClick={() => {
+                        setSelectedApplication(app);
+                        setShowRejectModal(true);
+                      }}
                       disabled={app.status === "Rejected"}
                     >
                       <FaTimesCircle /> Reject
                     </button>
+
                     <button
                       className="btn btn-xs bg-blue-500 text-white"
                       onClick={() => {
@@ -166,6 +187,9 @@ const ManageApplication = () => {
               <p><strong>Premium:</strong> ${selectedApplication.quoteInfo?.annual}</p>
               <p><strong>Status:</strong> {selectedApplication.status}</p>
               <p><strong>Assigned Agent:</strong> {selectedApplication.assignedAgent || "Not Assigned"}</p>
+              {selectedApplication.status === "Rejected" && selectedApplication.rejectionFeedback && (
+                <p className="text-red-500"><strong>Rejection Feedback:</strong> {selectedApplication.rejectionFeedback}</p>
+              )}
             </div>
           )}
           <div className="modal-action mt-4">
@@ -223,6 +247,53 @@ const ManageApplication = () => {
           </div>
         </div>
       </dialog>
+
+      {/* Step 9: Rejection Modal with Feedback */}
+      {showRejectModal && (
+        <dialog open className="modal" id="reject_modal">
+          <div className="modal-box max-w-lg">
+            <h3 className="font-bold text-lg text-red-600 mb-3 flex items-center gap-2">
+              <FaTimesCircle /> Reject Application
+            </h3>
+            <p className="mb-2 text-sm text-gray-600">
+              Provide a reason for rejecting{" "}
+              <strong>{selectedApplication?.ApplicantName}</strong>'s application.
+            </p>
+            <textarea
+              className="textarea textarea-bordered w-full h-28 mb-4"
+              placeholder="Write feedback or reason here..."
+              value={rejectionFeedback}
+              onChange={(e) => setRejectionFeedback(e.target.value)}
+            />
+            <div className="modal-action">
+              <button
+                className="btn btn-error"
+                onClick={() => {
+                  if (!rejectionFeedback.trim()) {
+                    Swal.fire("Error", "Feedback is required", "error");
+                    return;
+                  }
+                  rejectApplicationMutation.mutate({
+                    id: selectedApplication._id,
+                    feedback: rejectionFeedback,
+                  });
+                }}
+              >
+                Submit Rejection
+              </button>
+              <button
+                className="btn"
+                onClick={() => {
+                  setShowRejectModal(false);
+                  setRejectionFeedback("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 };

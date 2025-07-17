@@ -3,6 +3,7 @@ import { FaUser, FaEnvelope, FaCamera, FaClock } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../../Context/AuthProvider";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
+import UseUserRole from "../../../Hooks/UseUserRole";
 
 const DashboardHome = () => {
   const { user } = useContext(AuthContext);
@@ -12,7 +13,7 @@ const DashboardHome = () => {
   const [updatedInfo, setUpdatedInfo] = useState({ name: "", photo: "" });
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-
+ const { role, isRoleLoading } = UseUserRole();
   // Fetch user data from DB
   useEffect(() => {
     if (user?.email) {

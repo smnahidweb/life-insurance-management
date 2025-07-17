@@ -60,7 +60,7 @@ const AuthProvider = ({ children }) => {
       setUser(currentUser);
       if(currentUser?.email){
         const userData = {email:currentUser?.email}
-      axios.post('http://localhost:5000/jwt',userData,{
+      axios.post('https://life-insurance-server-side.vercel.app/jwt',userData,{
         withCredentials:true,
       })
       .then(res=>{

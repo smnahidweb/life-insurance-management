@@ -3,7 +3,7 @@ import React from 'react';
 const AxiosInstant = axios.create({
 
 
-    baseURL:`http://localhost:5000`
+    baseURL:`https://life-insurance-server-side.vercel.app`
 
 })
 
