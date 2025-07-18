@@ -31,11 +31,11 @@ const DashboardLayout = () => {
 
       <div className="drawer-content flex flex-col">
         {/* Top bar for small devices */}
-        <div className="w-full flex justify-between items-center p-4 bg-primary lg:hidden">
+        <div className="w-full flex justify-between items-center text-white p-4 bg-primary lg:hidden">
           <label htmlFor="dashboard-drawer" className="btn btn-ghost text-xl">
             <FaBars />
           </label>
-          <h2 className="text-lg font-bold">Dashboard</h2>
+          <h2 className="text-lg font-bold text-white">Dashboard</h2>
         </div>
 
         {/* Page content */}
