@@ -1,12 +1,44 @@
-# React + Vite
+# 🌐 Sure Life Insurance - Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **frontend** of the **Sure Life Insurance Management System**, built with **React**, **Tailwind CSS**, and **TanStack Query**. It provides a fully responsive, role-based UI for customers, agents, and admins.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- User roles: Customer, Agent, Admin
+- JWT-based secure API integration
+- Stripe payment integration
+- Image uploads via ImgBB
+- Blog system with create/edit/delete for Admin
+- Customer Reviews & Profile page
+- Admin Dashboard:
+  - Manage Users, Policies, Agents, Applications, Blogs, Transactions
+- Agent Dashboard:
+  - View Assigned Customers
+  - Update application status
+- Customer Dashboard:
+  - My Policies, Apply for Policy, Track Status
+  - Submit Review and Claims
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🧱 Tech Stack
+
+- **React.js**
+- **Tailwind CSS + Flowbite**
+- **React Router DOM**
+- **Firebase Auth**
+- **TanStack Query**
+- **React Hook Form + Yup**
+- **Stripe (Payment)**
+- **ImgBB (Image Upload)**
+
+---
+
+## 🔧 Setup Instructions
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/smnahidweb/life-insurance-management.git
+   cd life-insurance-management/client
